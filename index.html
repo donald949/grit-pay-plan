@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grit Payplan Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: #ffdd00;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            background: #ffcc00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 221, 0, 0.3);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        h3 {
+            border-bottom: 2px solid rgba(255, 221, 0, 0.5);
+            padding-bottom: 5px;
+        }
+
+        h4 {
+            border-bottom: 1px solid rgba(255, 221, 0, 0.3);
+            padding-bottom: 3px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GRIT PAYPLAN CALCULATOR</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('commission')">Commission Calculator</button>
+            <button class="tab" onclick="openTab('recruiter')">Recruiter</button>
+            <button class="tab" onclick="openTab('management')">Management</button>
+            <button class="tab" onclick="openTab('profit-share')">Profit Share</button>
+            <button class="tab" onclick="openTab('step-bonus')">Step Bonus</button>
+            <button class="tab" onclick="openTab('summary')">Summary</button>
+        </div>
+
+        <!-- Commission Calculator Tab -->
+        <div id="commission" class="tab-content active">
+            <h2>Commission Calculator</h2>
+            <div class="form-group">
+                <label for="payscale">Select Payscale:</label>
+                <select id="payscale" onchange="toggleHousingOptions()">
+                    <option value="rookie">Rookie</option>
+                    <option value="veteran">Veteran/Experienced</option>
+                </select>
+            </div>
+            
+            <!-- Revenue Calculation Section -->
+            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Revenue Calculation</h3>
+            <div class="form-group">
+                <label for="accounts-sold">Number of Accounts Sold:</label>
+                <input type="number" id="accounts-sold" placeholder="Enter number of accounts" min="0" onchange="calculateRevenue()" oninput="calculateRevenue()">
+            </div>
+            
+            <div class="form-group">
+                <label for="avg-contract">Average Contract Value ($):</label>
+                <input type="number" id="avg-contract" placeholder="Enter average contract value" min="0" step="0.01" onchange="calculateRevenue()" oninput="calculateRevenue()">
+            </div>
+            
+            <div class="form-group">
+                <label for="revenue">Total Serviced Revenue ($):</label>
+                <input type="number" id="revenue" placeholder="Enter revenue amount or calculate above" min="0" step="0.01">
+            </div>
+            
+            <div class="form-group">
+                <label for="cancelation-rate">Cancelation Percentage (%):</label>
+                <input type="number" id="cancelation-rate" placeholder="Enter cancelation rate (e.g., 20 for 20%)" min="0" max="100" step="0.1" value="20">
+            </div>
+            
+            <!-- Housing Section -->
+            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Housing & Duration</h3>
+            <div class="form-group">
+                <label for="months-selling">Months Selling:</label>
+                <input type="number" id="months-selling" placeholder="Enter number of months" min="1" max="12" value="1">
+            </div>
+            
+            <div id="rookie-housing" class="form-group">
+                <label for="housing-type">Housing Type:</label>
+                <select id="housing-type">
+                    <option value="shared">Shared Housing ($950/month)</option>
+                    <option value="private">Private Housing ($1900/month)</option>
+                </select>
+            </div>
+            
+            <div id="veteran-housing" class="form-group" style="display: none;">
+                <label>Veteran Housing: $55/night (29 nights/month)</label>
+            </div>
+            
+            <div id="rookie-accounts" class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="rent-credit">
+                    <label for="rent-credit">Eligible for $3000 rent credit (150+ accounts sold)</label>
+                </div>
+            </div>
+            
+            <!-- Requirements Section -->
+            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Requirements</h3>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="multi-year-rate">Multi-Year Percentage (%):</label>
+                    <input type="number" id="multi-year-rate" placeholder="Enter multi-year percentage" min="0" max="100" step="0.1">
+                    <small style="color: #ffdd00; font-size: 12px;">Need 70%+ to avoid $50/account deduction</small>
+                </div>
+                <div class="form-group">
+                    <label for="welcome-call-rate">Welcome Call Percentage (%):</label>
+                    <input type="number" id="welcome-call-rate" placeholder="Enter welcome call percentage" min="0" max="100" step="0.1">
+                    <small style="color: #ffdd00; font-size: 12px;">Need 90%+ to avoid $50/account deduction</small>
+                </div>
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateCommission()">Calculate Commission</button>
+            
+            <div id="commission-result" class="result">
+                <div class="result-item">
+                    <span>Serviced Revenue:</span>
+                    <span id="serviced-revenue">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Active Revenue (after attrition):</span>
+                    <span id="active-revenue">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Commission Owed:</span>
+                    <span id="total-commission-owed">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Gross Upfront Commission:</span>
+                    <span id="gross-upfront-commission">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Housing Costs:</span>
+                    <span id="housing-costs">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Net Upfront Commission:</span>
+                    <span id="net-upfront-commission">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Backend Commission Due:</span>
+                    <span id="backend-commission">$0.00</span>
+                </div>
+                <div class="result-item" id="rent-credit-row" style="display: none;">
+                    <span>Rent Credit (150+ accounts):</span>
+                    <span id="rent-credit-amount">+$3,000.00</span>
+                </div>
+                <div class="result-item" id="requirement-deductions-row" style="display: none;">
+                    <span>Requirement Deductions:</span>
+                    <span id="requirement-deductions">-$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Net Backend Commission:</span>
+                    <span id="net-backend-commission">$0.00</span>
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Backend Payment Schedule</h4>
+                <div class="result-item">
+                    <span>Monthly Payments (4 months):</span>
+                    <span id="monthly-payment">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Final Payments (2 payments):</span>
+                    <span id="final-payment">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Net Commission Total:</span>
+                    <span id="net-commission">$0.00</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
+                <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                    <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
+                </p>
+            </div>
+        </div>
+
+        <!-- Recruiter Tab -->
+        <div id="recruiter" class="tab-content">
+            <h2>Recruiter Override Calculator</h2>
+            <div class="form-group">
+                <label for="recruiter-year">Recruiter Year:</label>
+                <select id="recruiter-year">
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4+">4th+ Year</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="recruiter-payscale">Select Payscale:</label>
+                <select id="recruiter-payscale">
+                    <option value="veteran">Veteran/Experienced</option>
+                    <option value="rookie">Rookie</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="recruiter-rep-revenue">Rep Revenue ($):</label>
+                <input type="number" id="recruiter-rep-revenue" placeholder="Enter rep revenue" min="0" step="0.01">
+            </div>
+            
+            <div class="form-group">
+                <label for="recruiter-months-worked">Months Worked:</label>
+                <input type="number" id="recruiter-months-worked" placeholder="Enter months worked" min="1" max="12" value="1">
+            </div>
+            
+            <!-- Multiple Recruits Section -->
+            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Total recruiting override</h3>
+            
+            <div class="form-group">
+                <label for="multi-recruiter-year">Recruiter Year for Multiple Recruits:</label>
+                <select id="multi-recruiter-year">
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4+">4th+ Year</option>
+                </select>
+            </div>
+            
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="rookie-count">Number of Rookies Recruited:</label>
+                    <input type="number" id="rookie-count" placeholder="Enter number of rookies" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="vet-count">Number of Veterans Recruited:</label>
+                    <input type="number" id="vet-count" placeholder="Enter number of veterans" min="0" value="0">
+                </div>
+            </div>
+            
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="rookie-avg-revenue">Average Rookie Revenue ($):</label>
+                    <input type="number" id="rookie-avg-revenue" placeholder="Enter average rookie revenue" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="vet-avg-revenue">Average Veteran Revenue ($):</label>
+                    <input type="number" id="vet-avg-revenue" placeholder="Enter average veteran revenue" min="0" step="0.01">
+                </div>
+            </div>
+            
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="rookie-avg-months">Average Rookie Months:</label>
+                    <input type="number" id="rookie-avg-months" placeholder="Enter average months" min="1" max="12" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="vet-avg-months">Average Veteran Months:</label>
+                    <input type="number" id="vet-avg-months" placeholder="Enter average months" min="1" max="12" value="1">
+                </div>
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateRecruiter()">Calculate Recruiter Override</button>
+            
+            <div id="recruiter-result" class="result">
+                <div id="single-rep-section">
+                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Single Rep Override</h4>
+                    <div class="result-item">
+                        <span>Recruiter Year:</span>
+                        <span id="rec-year">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Rep Revenue:</span>
+                        <span id="rec-rep-revenue">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Final Override Rate:</span>
+                        <span id="rec-final-rate">0%</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Single Rep Override:</span>
+                        <span id="rec-single-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <div id="multiple-recruits-section">
+                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Total recruiting override</h4>
+                    <div class="result-item">
+                        <span>Rookies Override:</span>
+                        <span id="rec-rookies-total">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Veterans Override:</span>
+                        <span id="rec-vets-total">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Multiple Recruits Total:</span>
+                        <span id="rec-multiple-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Grand Total</h4>
+                <div class="result-item">
+                    <span>Total Override Payment:</span>
+                    <span id="rec-grand-total">$0.00</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
+                <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                    <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
+                </p>
+            </div>
+        </div>
+
+        <!-- Management Tab -->
+        <div id="management" class="tab-content">
+            <h2>Management Override Calculator</h2>
+            
+            <!-- Single Rep Management Override -->
+            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Single Rep Management Override</h3>
+            <div class="form-group">
+                <label for="mgmt-payscale">Select Rep Payscale:</label>
+                <select id="mgmt-payscale">
+                    <option value="veteran">Veteran/Experienced</option>
+                    <option value="rookie">Rookie</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="mgmt-rep-revenue">Rep Revenue ($):</label>
+                <input type="number" id="mgmt-rep-revenue" placeholder="Enter rep revenue" min="0" step="0.01">
+            </div>
+            
+            <div class="form-group">
+                <label for="mgmt-months-worked">Months Worked:</label>
+                <input type="number" id="mgmt-months-worked" placeholder="Enter months worked" min="1" max="12" value="1">
+            </div>
+            
+            <!-- Team Management Override -->
+            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Team Management Override</h3>
+            
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="mgmt-rookie-count">Number of Rookies on Team:</label>
+                    <input type="number" id="mgmt-rookie-count" placeholder="Enter number of rookies" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="mgmt-vet-count">Number of Veterans on Team:</label>
+                    <input type="number" id="mgmt-vet-count" placeholder="Enter number of veterans" min="0" value="0">
+                </div>
+            </div>
+            
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="mgmt-rookie-avg-revenue">Average Rookie Revenue ($):</label>
+                    <input type="number" id="mgmt-rookie-avg-revenue" placeholder="Enter average rookie revenue" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="mgmt-vet-avg-revenue">Average Veteran Revenue ($):</label>
+                    <input type="number" id="mgmt-vet-avg-revenue" placeholder="Enter average veteran revenue" min="0" step="0.01">
+                </div>
+            </div>
+            
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="mgmt-rookie-avg-months">Average Rookie Months:</label>
+                    <input type="number" id="mgmt-rookie-avg-months" placeholder="Enter average months" min="1" max="12" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="mgmt-vet-avg-months">Average Veteran Months:</label>
+                    <input type="number" id="mgmt-vet-avg-months" placeholder="Enter average months" min="1" max="12" value="1">
+                </div>
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateManagement()">Calculate Management Override</button>
+            
+            <div id="management-result" class="result">
+                <div id="single-mgmt-section">
+                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Single Rep Override</h4>
+                    <div class="result-item">
+                        <span>Rep Payscale:</span>
+                        <span id="mgmt-payscale-result">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Rep Revenue:</span>
+                        <span id="mgmt-rep-revenue-result">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Management Override Rate:</span>
+                        <span id="mgmt-override-rate">0%</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Single Rep Override:</span>
+                        <span id="mgmt-single-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <div id="team-mgmt-section">
+                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Team Management Override</h4>
+                    <div class="result-item">
+                        <span>Rookies Override:</span>
+                        <span id="mgmt-rookies-total">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Veterans Override:</span>
+                        <span id="mgmt-vets-total">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Team Override Total:</span>
+                        <span id="mgmt-team-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Grand Total</h4>
+                <div class="result-item">
+                    <span>Total Management Override:</span>
+                    <span id="mgmt-grand-total">$0.00</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
+                <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                    <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
+                </p>
+            </div>
+        </div>
+
+        <!-- Profit Share Tab -->
+        <div id="profit-share" class="tab-content">
+            <h2>Profit Share Calculator</h2>
+            
+            <!-- Rep Information -->
+            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Rep Information</h3>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="ps-payscale">Rep Payscale:</label>
+                    <select id="ps-payscale">
+                        <option value="rookie">Rookie (16% base)</option>
+                        <option value="veteran">Veteran (14% base)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ps-active-revenue">Active Revenue ($):</label>
+                    <input type="number" id="ps-active-revenue" placeholder="Enter active revenue" min="0" step="0.01">
+                </div>
+            </div>
+            
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="ps-months-worked">Months Worked:</label>
+                    <input type="number" id="ps-months-worked" placeholder="Enter months worked" min="1" max="12" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="your-ps-percentage">Your Profit Share Percentage (%):</label>
+                    <input type="number" id="your-ps-percentage" placeholder="Enter your percentage" min="0" max="100" step="0.1">
+                </div>
+            </div>
+            
+            <!-- Downline -->
+            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Downline Profit Share</h3>
+            <div class="form-group">
+                <label for="downline-percentage">Downline Profit Share Percentage (%):</label>
+                <input type="number" id="downline-percentage" placeholder="Enter percentage (leave empty if no one below you)" min="0" max="100" step="0.1">
+                <small style="color: #ffdd00; font-size: 12px;">Leave empty if no one is below you in the downline</small>
+            </div>
+            
+            <!-- Team Profit Share -->
+            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Team Profit Share</h3>
+            
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="ps-rookie-count">Number of Rookies on Team:</label>
+                    <input type="number" id="ps-rookie-count" placeholder="Enter number of rookies" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="ps-vet-count">Number of Veterans on Team:</label>
+                    <input type="number" id="ps-vet-count" placeholder="Enter number of veterans" min="0" value="0">
+                </div>
+            </div>
+            
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="ps-rookie-avg-revenue">Average Rookie Revenue ($):</label>
+                    <input type="number" id="ps-rookie-avg-revenue" placeholder="Enter average rookie revenue" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="ps-vet-avg-revenue">Average Veteran Revenue ($):</label>
+                    <input type="number" id="ps-vet-avg-revenue" placeholder="Enter average veteran revenue" min="0" step="0.01">
+                </div>
+            </div>
+            
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="ps-rookie-avg-months">Average Rookie Months:</label>
+                    <input type="number" id="ps-rookie-avg-months" placeholder="Enter average months" min="1" max="12" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="ps-vet-avg-months">Average Veteran Months:</label>
+                    <input type="number" id="ps-vet-avg-months" placeholder="Enter average months" min="1" max="12" value="1">
+                </div>
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateProfitShare()">Calculate Profit Share</button>
+            
+            <div id="profit-share-result" class="result">
+                <div id="single-ps-section">
+                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Single Rep Profit Share</h4>
+                    <div class="result-item">
+                        <span>Rep Payscale:</span>
+                        <span id="ps-payscale-result">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Active Revenue:</span>
+                        <span id="ps-active-revenue-result">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Base Profit Share Rate:</span>
+                        <span id="ps-base-rate">0%</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Performance Adjustment:</span>
+                        <span id="ps-performance-adjustment">100%</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Adjusted Base Rate:</span>
+                        <span id="ps-adjusted-base-rate">0%</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Your Profit Share %:</span>
+                        <span id="ps-your-percentage">0%</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Downline %:</span>
+                        <span id="ps-downline-percentage">0%</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Your Effective Rate:</span>
+                        <span id="ps-effective-rate">0%</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Single Rep Profit Share:</span>
+                        <span id="ps-single-amount">$0.00</span>
+                    </div>
+                </div>
+                
+                <div id="team-ps-section">
+                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Team Profit Share</h4>
+                    <div class="result-item">
+                        <span>Rookies Profit Share:</span>
+                        <span id="ps-rookies-total">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Veterans Profit Share:</span>
+                        <span id="ps-vets-total">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Team Profit Share Total:</span>
+                        <span id="ps-team-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Grand Total</h4>
+                <div class="result-item">
+                    <span>Total Profit Share:</span>
+                    <span id="ps-total-amount">$0.00</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
+                <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                    <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
+                </p>
+            </div>
+        </div>
+
+        <!-- Step Bonus Tab -->
+        <div id="step-bonus" class="tab-content">
+            <h2>Step Bonus Calculator</h2>
+            
+            <!-- Revenue Information -->
+            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Revenue Information</h3>
+            <div class="two-column">
+                <div class="form-group">
+                    <label for="sb-service-revenue">Team Serviced Revenue ($):</label>
+                    <input type="number" id="sb-service-revenue" placeholder="Enter team serviced revenue" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="sb-personal-revenue">Personal Revenue ($):</label>
+                    <input type="number" id="sb-personal-revenue" placeholder="Enter personal revenue" min="0" step="0.01">
+                </div>
+            </div>
+            
+            
+            <!-- First Year Qualification -->
+            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Qualification Status</h3>
+            <div class="checkbox-group">
+                <input type="checkbox" id="first-year-qualifying">
+                <label for="first-year-qualifying">This is my first year qualifying for step bonus</label>
+            </div>
+            <p style="color: #ccc; margin: 10px 0; font-size: 14px;">If checked, you'll receive your qualifying tier bonus plus the one below what you qualified for.</p>
+            
+            <button class="calculate-btn" onclick="calculateStepBonus()">Calculate Step Bonus</button>
+            
+            <div id="step-bonus-result" class="result">
+                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Qualification Results</h4>
+                <div class="result-item">
+                    <span>Highest Tier Achieved:</span>
+                    <span id="sb-highest-tier">None</span>
+                </div>
+                <div class="result-item">
+                    <span>First Year Qualifying:</span>
+                    <span id="sb-first-year-status">No</span>
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Bonus Breakdown</h4>
+                <div id="sb-bonus-breakdown">
+                    <!-- Bonus items will be populated here -->
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Total</h4>
+                <div class="result-item">
+                    <span>Total Step Bonus:</span>
+                    <span id="sb-total-bonus">$0.00</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
+                <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                    <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
+                </p>
+            </div>
+        </div>
+
+        <!-- Summary Tab -->
+        <div id="summary" class="tab-content">
+            <h2>Total Compensation Summary</h2>
+            
+            <div style="text-align: center; margin-bottom: 30px;">
+                <button class="calculate-btn" onclick="calculateSummary()">Calculate Total Compensation</button>
+            </div>
+            
+            <div id="summary-result" class="result">
+                <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Compensation Breakdown by Category</h3>
+                
+                <div id="commission-summary" class="summary-section">
+                    <h4 style="margin: 15px 0 10px 0; color: #ffdd00;">Commission Calculator</h4>
+                    <div class="result-item">
+                        <span>Status:</span>
+                        <span id="commission-status">Not Calculated</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Net Commission Total:</span>
+                        <span id="commission-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <div id="recruiter-summary" class="summary-section">
+                    <h4 style="margin: 15px 0 10px 0; color: #ffdd00;">Recruiter Override</h4>
+                    <div class="result-item">
+                        <span>Status:</span>
+                        <span id="recruiter-status">Not Calculated</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Total Override Payment:</span>
+                        <span id="recruiter-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <div id="management-summary" class="summary-section">
+                    <h4 style="margin: 15px 0 10px 0; color: #ffdd00;">Management Override</h4>
+                    <div class="result-item">
+                        <span>Status:</span>
+                        <span id="management-status">Not Calculated</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Total Management Override:</span>
+                        <span id="management-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <div id="profit-share-summary" class="summary-section">
+                    <h4 style="margin: 15px 0 10px 0; color: #ffdd00;">Profit Share</h4>
+                    <div class="result-item">
+                        <span>Status:</span>
+                        <span id="profit-share-status">Not Calculated</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Total Profit Share:</span>
+                        <span id="profit-share-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <div id="step-bonus-summary" class="summary-section">
+                    <h4 style="margin: 15px 0 10px 0; color: #ffdd00;">Step Bonus</h4>
+                    <div class="result-item">
+                        <span>Status:</span>
+                        <span id="step-bonus-status">Not Calculated</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Total Step Bonus:</span>
+                        <span id="step-bonus-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <div style="border-top: 3px solid #ffdd00; margin-top: 30px; padding-top: 20px;">
+                    <div class="result-item" style="font-size: 1.5em; font-weight: bold; color: #ffdd00;">
+                        <span>TOTAL ESTIMATED COMPENSATION:</span>
+                        <span id="grand-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
+                    <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                        <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Commission structure data
+        const rookieCommission = [
+            { min: 0, max: 74999, rate: 0.20 },
+            { min: 75000, max: 99999, rate: 0.25 },
+            { min: 100000, max: 124999, rate: 0.28 },
+            { min: 125000, max: 149999, rate: 0.31 },
+            { min: 150000, max: 174999, rate: 0.34 },
+            { min: 175000, max: 199999, rate: 0.37 },
+            { min: 200000, max: 249999, rate: 0.42 },
+            { min: 250000, max: 299999, rate: 0.45 },
+            { min: 300000, max: 349999, rate: 0.50 },
+            { min: 350000, max: 399999, rate: 0.52 },
+            { min: 400000, max: 499999, rate: 0.53 },
+            { min: 500000, max: Infinity, rate: 0.55 }
+        ];
+
+        const veteranCommission = [
+            { min: 0, max: 74999, rate: 0.20 },
+            { min: 75000, max: 99999, rate: 0.25 },
+            { min: 100000, max: 124999, rate: 0.30 },
+            { min: 125000, max: 149999, rate: 0.32 },
+            { min: 150000, max: 199999, rate: 0.37 },
+            { min: 200000, max: 249999, rate: 0.45 },
+            { min: 250000, max: 299999, rate: 0.50 },
+            { min: 300000, max: 349999, rate: 0.52 },
+            { min: 350000, max: 399999, rate: 0.54 },
+            { min: 400000, max: 499999, rate: 0.56 },
+            { min: 500000, max: 599999, rate: 0.60 },
+            { min: 600000, max: 749999, rate: 0.62 },
+            { min: 750000, max: 999999, rate: 0.65 },
+            { min: 1000000, max: 1249999, rate: 0.70 },
+            { min: 1250000, max: 1499999, rate: 0.75 },
+            { min: 1500000, max: Infinity, rate: 0.80 }
+        ];
+
+        // Profit share positions
+        const profitSharePositions = {
+            'partner': { requirement: '$100K + 3 Recruiting Lines', revenue: 100000, share: 0 },
+            'divisional': { requirement: '$225K + 3 Partners', revenue: 225000, share: 0 },
+            'regional': { requirement: '$150K + Divisional & 3 Partners', revenue: 150000, share: 0 },
+            'senior-regional': { requirement: '$300K + Regional & 3 Partners', revenue: 300000, share: 0 },
+            'director': { requirement: '$750K + Director & 4 Partners', revenue: 750000, share: 0 },
+            'vice-president': { requirement: '$1.5M + Director & 4 Partners', revenue: 1500000, share: 0 },
+            'senior-vice-president': { requirement: '$2M + VP & 3 Directors', revenue: 2000000, share: 0 }
+        };
+
+        // Step bonus tier structure - based only on service revenue and personal revenue
+        const stepBonusTiers = [
+            {
+                name: 'Partner',
+                serviceRevenue: 1500000,
+                personalRevenue: 100000,
+                bonus: 50000
+            },
+            {
+                name: 'Divisional',
+                serviceRevenue: 3000000,
+                personalRevenue: 100000,
+                bonus: 100000
+            },
+            {
+                name: 'Senior Divisional',
+                serviceRevenue: 6000000,
+                personalRevenue: 0,
+                bonus: 250000
+            },
+            {
+                name: 'Regional',
+                serviceRevenue: 10000000,
+                personalRevenue: 0,
+                bonus: 350000
+            },
+            {
+                name: 'Senior Regional',
+                serviceRevenue: 15000000,
+                personalRevenue: 0,
+                bonus: 500000
+            },
+            {
+                name: 'Director',
+                serviceRevenue: 25000000,
+                personalRevenue: 0,
+                bonus: 750000
+            },
+            {
+                name: 'Vice President',
+                serviceRevenue: 50000000,
+                personalRevenue: 0,
+                bonus: 1000000
+            },
+            {
+                name: 'Senior Vice President',
+                serviceRevenue: 75000000,
+                personalRevenue: 0,
+                bonus: 1500000
+            },
+            {
+                name: 'GM',
+                serviceRevenue: 100000000,
+                personalRevenue: 0,
+                bonus: 2000000
+            }
+        ];
+
+        // Personal revenue step bonuses
+        const personalRevenueBonuses = [
+            {
+                name: 'Personal $500K',
+                personalRevenue: 500000,
+                bonus: 25000
+            },
+            {
+                name: 'Personal $750K',
+                personalRevenue: 750000,
+                bonus: 50000
+            },
+            {
+                name: 'Personal $1M',
+                personalRevenue: 1000000,
+                bonus: 100000
+            },
+            {
+                name: 'Personal $1.5M',
+                personalRevenue: 1500000,
+                bonus: 200000
+            }
+        ];
+
+        function openTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function toggleHousingOptions() {
+            const payscale = document.getElementById('payscale').value;
+            const rookieHousing = document.getElementById('rookie-housing');
+            const veteranHousing = document.getElementById('veteran-housing');
+            const rookieAccounts = document.getElementById('rookie-accounts');
+            
+            if (payscale === 'rookie') {
+                rookieHousing.style.display = 'block';
+                veteranHousing.style.display = 'none';
+                rookieAccounts.style.display = 'block';
+            } else {
+                rookieHousing.style.display = 'none';
+                veteranHousing.style.display = 'block';
+                rookieAccounts.style.display = 'none';
+            }
+        }
+
+        function calculateRevenue() {
+            const accountsSold = parseFloat(document.getElementById('accounts-sold').value) || 0;
+            const avgContract = parseFloat(document.getElementById('avg-contract').value) || 0;
+            
+            // Always calculate revenue, even if one field is 0
+            const totalRevenue = accountsSold * avgContract;
+            document.getElementById('revenue').value = totalRevenue.toFixed(2);
+            
+            // Auto-check rent credit if rookie and 150+ accounts
+            const payscale = document.getElementById('payscale').value;
+            if (payscale === 'rookie' && accountsSold >= 150) {
+                document.getElementById('rent-credit').checked = true;
+            } else if (payscale === 'rookie' && accountsSold < 150) {
+                document.getElementById('rent-credit').checked = false;
+            }
+        }
+
+        function calculateCommission() {
+            const payscale = document.getElementById('payscale').value;
+            const servicedRevenue = parseFloat(document.getElementById('revenue').value) || 0;
+            const cancelationRate = parseFloat(document.getElementById('cancelation-rate').value) || 0;
+            const monthsSelling = parseFloat(document.getElementById('months-selling').value) || 1;
+            const accountsSold = parseFloat(document.getElementById('accounts-sold').value) || 0;
+            const multiYearRate = parseFloat(document.getElementById('multi-year-rate').value) || 0;
+            const welcomeCallRate = parseFloat(document.getElementById('welcome-call-rate').value) || 0;
+            
+            if (servicedRevenue === 0) {
+                alert('Please enter a revenue amount');
+                return;
+            }
+
+            // Calculate active revenue (after attrition)
+            const activeRevenue = servicedRevenue * (1 - cancelationRate / 100);
+
+            // Determine commission percentage based on SERVICED revenue tier
+            const commissionStructure = payscale === 'rookie' ? rookieCommission : veteranCommission;
+            let commissionRate = 0;
+
+            // Find commission rate based on serviced revenue tier
+            for (const tier of commissionStructure) {
+                if (servicedRevenue >= tier.min && servicedRevenue <= tier.max) {
+                    commissionRate = tier.rate;
+                    break;
+                }
+            }
+
+            // Calculate total commission owed based on active revenue but using serviced revenue's tier rate
+            const totalCommissionOwed = activeRevenue * commissionRate;
+
+            // Calculate upfront commission (based on serviced revenue)
+            const upfrontRate = payscale === 'rookie' ? 0.10 : 0.15;
+            const grossUpfrontCommission = servicedRevenue * upfrontRate;
+            
+            // Calculate housing costs
+            let housingCosts = 0;
+            if (payscale === 'rookie') {
+                const housingType = document.getElementById('housing-type').value;
+                const monthlyRate = housingType === 'shared' ? 950 : 1900;
+                housingCosts = monthlyRate * monthsSelling;
+            } else {
+                // Veteran: $55/night * 29 nights * months
+                housingCosts = 55 * 29 * monthsSelling;
+            }
+
+            // Calculate rent credit for rookies
+            let rentCredit = 0;
+            const isRentCreditEligible = payscale === 'rookie' && accountsSold >= 150;
+            if (isRentCreditEligible && document.getElementById('rent-credit').checked) {
+                rentCredit = 3000;
+            }
+
+            const netHousingDeduction = housingCosts - rentCredit;
+            
+            // Net upfront commission (gross upfront minus full housing costs - no rent credit applied here)
+            const netUpfrontCommission = Math.max(0, grossUpfrontCommission - housingCosts);
+
+            // Calculate backend commission (total commission - gross upfront)
+            const backendCommission = totalCommissionOwed - grossUpfrontCommission;
+            
+            // Check requirements and calculate deductions
+            let requirementDeductions = 0;
+            
+            // Multi-year deduction: $50 per account for accounts below 70% threshold
+            if (multiYearRate < 70 && accountsSold > 0) {
+                const multiYearDeficit = (70 - multiYearRate) / 100;
+                const accountsNotMeetingMultiYear = Math.ceil(accountsSold * multiYearDeficit);
+                requirementDeductions += accountsNotMeetingMultiYear * 50;
+            }
+            
+            // Welcome call deduction: $50 per account for accounts below 90% threshold  
+            if (welcomeCallRate < 90 && accountsSold > 0) {
+                const welcomeCallDeficit = (90 - welcomeCallRate) / 100;
+                const accountsNotMeetingWelcomeCall = Math.ceil(accountsSold * welcomeCallDeficit);
+                requirementDeductions += accountsNotMeetingWelcomeCall * 50;
+            }
+            
+            // Calculate net backend commission (backend + rent credit - requirement deductions)
+            const netBackendCommission = backendCommission + rentCredit - requirementDeductions;
+            
+            // First 4 backend payments calculation: ((Serviced Revenue × 50%) × Commission Rate) - Gross Upfront ÷ 4
+            const holdbackCommission = (servicedRevenue * 0.5) * commissionRate;
+            const first4PaymentsBase = holdbackCommission - grossUpfrontCommission;
+            const monthlyPaymentAmount = first4PaymentsBase / 4;
+            
+            // Final 2 payments calculation: (Active Revenue × Commission Rate) - Gross Upfront - First 4 Payments + Rent Credit - Requirement Deductions
+            const activeCommissionTotal = activeRevenue * commissionRate;
+            const totalFirst4Payments = first4PaymentsBase;
+            const remainingForFinal2 = activeCommissionTotal - grossUpfrontCommission - totalFirst4Payments + rentCredit - requirementDeductions;
+            const finalPaymentAmount = remainingForFinal2 / 2; // Allow negative values
+
+            // Payment amounts (both monthly and final can be negative)
+            const adjustedMonthlyPayment = monthlyPaymentAmount; // Can be negative
+            const adjustedFinalPayment = finalPaymentAmount; // Can be negative
+            
+            // Total net commission includes negative final payments
+            const totalNetCommission = netUpfrontCommission + (adjustedMonthlyPayment * 4) + (adjustedFinalPayment * 2);
+
+            // Display results
+            document.getElementById('serviced-revenue').textContent = `$${servicedRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('active-revenue').textContent = `$${activeRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('total-commission-owed').textContent = `$${totalCommissionOwed.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('gross-upfront-commission').textContent = `$${grossUpfrontCommission.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('net-upfront-commission').textContent = `$${netUpfrontCommission.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('backend-commission').textContent = `$${backendCommission.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('net-backend-commission').textContent = `$${netBackendCommission.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            
+            // Show requirement deductions if any
+            if (requirementDeductions > 0) {
+                document.getElementById('requirement-deductions-row').style.display = 'flex';
+                document.getElementById('requirement-deductions').textContent = `-$${requirementDeductions.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            } else {
+                document.getElementById('requirement-deductions-row').style.display = 'none';
+            }
+            document.getElementById('housing-costs').textContent = `-$${housingCosts.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            
+            if (isRentCreditEligible) {
+                document.getElementById('rent-credit-row').style.display = 'flex';
+                document.getElementById('rent-credit-amount').textContent = `+$${rentCredit.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            } else {
+                document.getElementById('rent-credit-row').style.display = 'none';
+            }
+            
+            document.getElementById('monthly-payment').textContent = `$${adjustedMonthlyPayment.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('final-payment').textContent = `$${adjustedFinalPayment.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('net-commission').textContent = `$${totalNetCommission.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('commission-result').classList.add('show');
+            
+            // Sync active revenue to Step Bonus tab
+            syncCommissionToStepBonus();
+        }
+
+        function calculateRecruiter() {
+            // Get single recruiter data
+            const recruiterYear = document.getElementById('recruiter-year').value;
+            const repRevenue = parseFloat(document.getElementById('recruiter-rep-revenue').value) || 0;
+            const monthsWorked = parseFloat(document.getElementById('recruiter-months-worked').value) || 1;
+            
+            // Get multiple recruits data
+            const multiRecruiterYear = document.getElementById('multi-recruiter-year').value;
+            const rookieCount = parseFloat(document.getElementById('rookie-count').value) || 0;
+            const vetCount = parseFloat(document.getElementById('vet-count').value) || 0;
+            const rookieAvgRevenue = parseFloat(document.getElementById('rookie-avg-revenue').value) || 0;
+            const vetAvgRevenue = parseFloat(document.getElementById('vet-avg-revenue').value) || 0;
+            const rookieAvgMonths = parseFloat(document.getElementById('rookie-avg-months').value) || 1;
+            const vetAvgMonths = parseFloat(document.getElementById('vet-avg-months').value) || 1;
+            
+            // Check what data is provided
+            const hasSingleRecruiterData = repRevenue > 0;
+            const hasMultipleRecruitsData = (rookieCount > 0 && rookieAvgRevenue > 0) || (vetCount > 0 && vetAvgRevenue > 0);
+            
+            if (!hasSingleRecruiterData && !hasMultipleRecruitsData) {
+                alert('Please enter data for either single recruiter override or total recruiting override calculation');
+                return;
+            }
+            
+            // Year-based override percentages
+            const yearOverrides = {
+                '1': 0.04,       // 4% for 1st year
+                '2': 0.04,       // 4% for 2nd year
+                '3': 0.03,       // 3% for 3rd year
+                '4+': 0.02       // 2% for 4th+ year
+            };
+            
+            const performanceThreshold = 18750; // $18,750 per month
+            
+            // Initialize results
+            let singleRepOverride = 0;
+            let finalOverrideRate = 0;
+            let rookiesOverride = 0;
+            let vetsOverride = 0;
+            
+            // Calculate single recruiter override if data is provided
+            if (hasSingleRecruiterData) {
+                const baseOverrideRate = yearOverrides[recruiterYear] || 0;
+                const monthlyRevenue = repRevenue / monthsWorked;
+                const isBelowThreshold = monthlyRevenue < performanceThreshold;
+                finalOverrideRate = isBelowThreshold ? baseOverrideRate * 0.5 : baseOverrideRate;
+                singleRepOverride = repRevenue * finalOverrideRate;
+            }
+            
+            // Calculate multiple recruits override if data is provided
+            if (hasMultipleRecruitsData) {
+                const baseOverrideRate = yearOverrides[multiRecruiterYear] || 0;
+                
+                // Helper function to calculate override with performance adjustment
+                function calculateOverride(revenue, months) {
+                    if (revenue === 0) return 0;
+                    const monthlyRevenue = revenue / months;
+                    const isBelowThreshold = monthlyRevenue < performanceThreshold;
+                    const finalOverrideRate = isBelowThreshold ? baseOverrideRate * 0.5 : baseOverrideRate;
+                    return revenue * finalOverrideRate;
+                }
+                
+                rookiesOverride = rookieCount * calculateOverride(rookieAvgRevenue, rookieAvgMonths);
+                vetsOverride = vetCount * calculateOverride(vetAvgRevenue, vetAvgMonths);
+            }
+            
+            const multipleRecruitsTotal = rookiesOverride + vetsOverride;
+            const grandTotal = singleRepOverride + multipleRecruitsTotal;
+            
+            // Show/hide sections based on whether they have results
+            if (hasSingleRecruiterData && singleRepOverride > 0) {
+                document.getElementById('single-rep-section').style.display = 'block';
+                document.getElementById('rec-year').textContent = `${recruiterYear}${recruiterYear === '1' ? 'st' : recruiterYear === '2' ? 'nd' : recruiterYear === '3' ? 'rd' : 'th'} Year`;
+                document.getElementById('rec-rep-revenue').textContent = `$${repRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('rec-final-rate').textContent = `${(finalOverrideRate * 100).toFixed(0)}%`;
+                document.getElementById('rec-single-total').textContent = `$${singleRepOverride.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            } else {
+                document.getElementById('single-rep-section').style.display = 'none';
+            }
+            
+            if (hasMultipleRecruitsData && multipleRecruitsTotal > 0) {
+                document.getElementById('multiple-recruits-section').style.display = 'block';
+                document.getElementById('rec-rookies-total').textContent = `$${rookiesOverride.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('rec-vets-total').textContent = `$${vetsOverride.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('rec-multiple-total').textContent = `$${multipleRecruitsTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            } else {
+                document.getElementById('multiple-recruits-section').style.display = 'none';
+            }
+            
+            document.getElementById('rec-grand-total').textContent = `$${grandTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('recruiter-result').classList.add('show');
+        }
+
+        function calculateManagement() {
+            // Get single rep data
+            const payscale = document.getElementById('mgmt-payscale').value;
+            const repRevenue = parseFloat(document.getElementById('mgmt-rep-revenue').value) || 0;
+            const monthsWorked = parseFloat(document.getElementById('mgmt-months-worked').value) || 1;
+            
+            // Get team data
+            const rookieCount = parseFloat(document.getElementById('mgmt-rookie-count').value) || 0;
+            const vetCount = parseFloat(document.getElementById('mgmt-vet-count').value) || 0;
+            const rookieAvgRevenue = parseFloat(document.getElementById('mgmt-rookie-avg-revenue').value) || 0;
+            const vetAvgRevenue = parseFloat(document.getElementById('mgmt-vet-avg-revenue').value) || 0;
+            const rookieAvgMonths = parseFloat(document.getElementById('mgmt-rookie-avg-months').value) || 1;
+            const vetAvgMonths = parseFloat(document.getElementById('mgmt-vet-avg-months').value) || 1;
+            
+            // Check what data is provided
+            const hasSingleRepData = repRevenue > 0;
+            const hasTeamData = (rookieCount > 0 && rookieAvgRevenue > 0) || (vetCount > 0 && vetAvgRevenue > 0);
+            
+            if (!hasSingleRepData && !hasTeamData) {
+                alert('Please enter data for either single rep or team management override calculation');
+                return;
+            }
+            
+            // Management override rates
+            const rookieOverrideRate = 0.05; // 5%
+            const veteranOverrideRate = 0.03; // 3%
+            const performanceThreshold = 18750; // $18,750 per month
+            
+            // Initialize results
+            let singleRepOverride = 0;
+            let finalOverrideRate = 0;
+            let rookiesOverride = 0;
+            let vetsOverride = 0;
+            
+            // Helper function to calculate override with performance adjustment
+            function calculateOverride(revenue, months, baseRate) {
+                if (revenue === 0) return 0;
+                const monthlyRevenue = revenue / months;
+                const isBelowThreshold = monthlyRevenue < performanceThreshold;
+                const adjustedRate = isBelowThreshold ? baseRate * 0.5 : baseRate;
+                return revenue * adjustedRate;
+            }
+            
+            // Calculate single rep override if data is provided
+            if (hasSingleRepData) {
+                const baseRate = payscale === 'rookie' ? rookieOverrideRate : veteranOverrideRate;
+                const monthlyRevenue = repRevenue / monthsWorked;
+                const isBelowThreshold = monthlyRevenue < performanceThreshold;
+                finalOverrideRate = isBelowThreshold ? baseRate * 0.5 : baseRate;
+                singleRepOverride = repRevenue * finalOverrideRate;
+            }
+            
+            // Calculate team overrides if data is provided
+            if (hasTeamData) {
+                rookiesOverride = rookieCount * calculateOverride(rookieAvgRevenue, rookieAvgMonths, rookieOverrideRate);
+                vetsOverride = vetCount * calculateOverride(vetAvgRevenue, vetAvgMonths, veteranOverrideRate);
+            }
+            
+            const teamTotal = rookiesOverride + vetsOverride;
+            const grandTotal = singleRepOverride + teamTotal;
+            
+            // Show/hide sections based on whether they have results
+            if (hasSingleRepData && singleRepOverride > 0) {
+                document.getElementById('single-mgmt-section').style.display = 'block';
+                document.getElementById('mgmt-payscale-result').textContent = payscale === 'rookie' ? 'Rookie' : 'Veteran/Experienced';
+                document.getElementById('mgmt-rep-revenue-result').textContent = `$${repRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('mgmt-override-rate').textContent = `${(finalOverrideRate * 100).toFixed(1)}%`;
+                document.getElementById('mgmt-single-total').textContent = `$${singleRepOverride.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            } else {
+                document.getElementById('single-mgmt-section').style.display = 'none';
+            }
+            
+            if (hasTeamData && teamTotal > 0) {
+                document.getElementById('team-mgmt-section').style.display = 'block';
+                document.getElementById('mgmt-rookies-total').textContent = `$${rookiesOverride.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('mgmt-vets-total').textContent = `$${vetsOverride.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('mgmt-team-total').textContent = `$${teamTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            } else {
+                document.getElementById('team-mgmt-section').style.display = 'none';
+            }
+            
+            document.getElementById('mgmt-grand-total').textContent = `$${grandTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('management-result').classList.add('show');
+        }
+
+        function calculateProfitShare() {
+            // Get rep information
+            const payscale = document.getElementById('ps-payscale').value;
+            const activeRevenue = parseFloat(document.getElementById('ps-active-revenue').value) || 0;
+            const monthsWorked = parseFloat(document.getElementById('ps-months-worked').value) || 1;
+            const yourPercentage = parseFloat(document.getElementById('your-ps-percentage').value) || 0;
+            
+            // Get team data
+            const rookieCount = parseFloat(document.getElementById('ps-rookie-count').value) || 0;
+            const vetCount = parseFloat(document.getElementById('ps-vet-count').value) || 0;
+            const rookieAvgRevenue = parseFloat(document.getElementById('ps-rookie-avg-revenue').value) || 0;
+            const vetAvgRevenue = parseFloat(document.getElementById('ps-vet-avg-revenue').value) || 0;
+            const rookieAvgMonths = parseFloat(document.getElementById('ps-rookie-avg-months').value) || 1;
+            const vetAvgMonths = parseFloat(document.getElementById('ps-vet-avg-months').value) || 1;
+            
+            // Check what data is provided
+            const hasSingleRepData = activeRevenue > 0 && yourPercentage > 0;
+            const hasTeamData = (rookieCount > 0 && rookieAvgRevenue > 0) || (vetCount > 0 && vetAvgRevenue > 0);
+            
+            if (!hasSingleRepData && !hasTeamData) {
+                alert('Please enter data for either single rep or team profit share calculation');
+                return;
+            }
+            
+            // For team calculations, we need your profit share percentage
+            if (hasTeamData && yourPercentage === 0) {
+                alert('Please enter your profit share percentage for team calculations');
+                return;
+            }
+            
+            // Get downline percentage
+            const downlinePercentage = parseFloat(document.getElementById('downline-percentage').value) || 0;
+            
+            // Base profit share rates
+            const rookieBaseRate = 0.16; // 16%
+            const veteranBaseRate = 0.14; // 14%
+            const performanceThreshold = 18750; // $18,750 per month
+            
+            // Initialize results
+            let singleRepProfitShare = 0;
+            let baseRate = 0;
+            let performanceAdjustment = 1.0;
+            let adjustedBaseRate = 0;
+            let effectiveRate = 0;
+            let rookiesProfitShare = 0;
+            let vetsProfitShare = 0;
+            
+            // Helper function to calculate profit share with performance adjustment
+            function calculateProfitShare(revenue, months, baseRate, effectiveRateDecimal) {
+                if (revenue === 0) return 0;
+                const monthlyRevenue = revenue / months;
+                const isBelowThreshold = monthlyRevenue < performanceThreshold;
+                const adjustedRate = isBelowThreshold ? baseRate * 0.5 : baseRate;
+                return revenue * adjustedRate * effectiveRateDecimal;
+            }
+            
+            // Calculate single rep profit share if data is provided
+            if (hasSingleRepData) {
+                baseRate = payscale === 'rookie' ? rookieBaseRate : veteranBaseRate;
+                const monthlyRevenue = activeRevenue / monthsWorked;
+                const isBelowThreshold = monthlyRevenue < performanceThreshold;
+                performanceAdjustment = isBelowThreshold ? 0.5 : 1.0;
+                adjustedBaseRate = baseRate * performanceAdjustment;
+                
+                // Calculate effective rate based on downline
+                effectiveRate = yourPercentage;
+                if (downlinePercentage > 0) {
+                    effectiveRate = Math.max(0, yourPercentage - downlinePercentage);
+                }
+                
+                const effectiveRateDecimal = effectiveRate / 100;
+                singleRepProfitShare = activeRevenue * adjustedBaseRate * effectiveRateDecimal;
+            }
+            
+            // Calculate team profit share if data is provided
+            if (hasTeamData) {
+                // Calculate team effective rate
+                let teamEffectiveRate;
+                if (hasSingleRepData) {
+                    // Use the effective rate from single rep calculation
+                    teamEffectiveRate = effectiveRate;
+                } else {
+                    // Calculate effective rate for team only
+                    teamEffectiveRate = yourPercentage;
+                    if (downlinePercentage > 0) {
+                        teamEffectiveRate = Math.max(0, yourPercentage - downlinePercentage);
+                    }
+                }
+                
+                const teamEffectiveRateDecimal = teamEffectiveRate / 100;
+                
+                rookiesProfitShare = rookieCount * calculateProfitShare(rookieAvgRevenue, rookieAvgMonths, rookieBaseRate, teamEffectiveRateDecimal);
+                vetsProfitShare = vetCount * calculateProfitShare(vetAvgRevenue, vetAvgMonths, veteranBaseRate, teamEffectiveRateDecimal);
+            }
+            
+            const teamTotal = rookiesProfitShare + vetsProfitShare;
+            const totalProfitShare = singleRepProfitShare + teamTotal;
+            
+            // Show/hide sections based on whether they have results
+            if (hasSingleRepData && singleRepProfitShare > 0) {
+                document.getElementById('single-ps-section').style.display = 'block';
+                document.getElementById('ps-payscale-result').textContent = payscale === 'rookie' ? 'Rookie' : 'Veteran';
+                document.getElementById('ps-active-revenue-result').textContent = `$${activeRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('ps-base-rate').textContent = `${(baseRate * 100).toFixed(1)}%`;
+                document.getElementById('ps-performance-adjustment').textContent = `${(performanceAdjustment * 100).toFixed(0)}%`;
+                document.getElementById('ps-adjusted-base-rate').textContent = `${(adjustedBaseRate * 100).toFixed(1)}%`;
+                document.getElementById('ps-your-percentage').textContent = `${yourPercentage.toFixed(1)}%`;
+                document.getElementById('ps-downline-percentage').textContent = `${downlinePercentage.toFixed(1)}%`;
+                document.getElementById('ps-effective-rate').textContent = `${effectiveRate.toFixed(1)}%`;
+                document.getElementById('ps-single-amount').textContent = `$${singleRepProfitShare.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            } else {
+                document.getElementById('single-ps-section').style.display = 'none';
+            }
+            
+            if (hasTeamData && teamTotal > 0) {
+                document.getElementById('team-ps-section').style.display = 'block';
+                document.getElementById('ps-rookies-total').textContent = `$${rookiesProfitShare.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('ps-vets-total').textContent = `$${vetsProfitShare.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('ps-team-total').textContent = `$${teamTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            } else {
+                document.getElementById('team-ps-section').style.display = 'none';
+            }
+            
+            document.getElementById('ps-total-amount').textContent = `$${totalProfitShare.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('profit-share-result').classList.add('show');
+        }
+
+        function calculateStepBonus() {
+            // Get input values
+            const serviceRevenue = parseFloat(document.getElementById('sb-service-revenue').value) || 0;
+            const personalRevenue = parseFloat(document.getElementById('sb-personal-revenue').value) || 0;
+            const isFirstYear = document.getElementById('first-year-qualifying').checked;
+            
+            if (serviceRevenue === 0) {
+                alert('Please enter service revenue');
+                return;
+            }
+            
+            // Check qualification for each tier
+            const qualifiedTiers = [];
+            
+            for (let i = 0; i < stepBonusTiers.length; i++) {
+                const tier = stepBonusTiers[i];
+                
+                // Check if requirements are met (only service revenue and personal revenue)
+                const meetsRequirements = 
+                    serviceRevenue >= tier.serviceRevenue &&
+                    personalRevenue >= tier.personalRevenue;
+                
+                if (meetsRequirements) {
+                    qualifiedTiers.push(i);
+                }
+            }
+            
+            // Find highest qualified tier
+            const highestTierIndex = qualifiedTiers.length > 0 ? Math.max(...qualifiedTiers) : -1;
+            const highestTier = highestTierIndex >= 0 ? stepBonusTiers[highestTierIndex] : null;
+            
+            // Check personal revenue bonuses (tiered, not cumulative - only highest tier)
+            let highestPersonalBonus = null;
+            for (const personalBonus of personalRevenueBonuses) {
+                if (personalRevenue >= personalBonus.personalRevenue) {
+                    highestPersonalBonus = personalBonus;
+                }
+            }
+            
+            // Calculate bonuses
+            let totalBonus = 0;
+            const bonusBreakdown = [];
+            
+            // Add personal revenue bonus first (only the highest tier qualified)
+            if (highestPersonalBonus) {
+                totalBonus += highestPersonalBonus.bonus;
+                bonusBreakdown.push({
+                    name: highestPersonalBonus.name,
+                    bonus: highestPersonalBonus.bonus,
+                    isHighlighted: false
+                });
+            }
+            
+            if (highestTier) {
+                if (isFirstYear) {
+                    // First year: get the highest tier bonus PLUS the tier directly below it (if it exists)
+                    totalBonus += highestTier.bonus;
+                    
+                    // Add the tier directly below FIRST (if there is one) - this will appear above
+                    if (highestTierIndex > 0) {
+                        const tierBelow = stepBonusTiers[highestTierIndex - 1];
+                        totalBonus += tierBelow.bonus;
+                        bonusBreakdown.push({
+                            name: tierBelow.name,
+                            bonus: tierBelow.bonus,
+                            isHighlighted: false
+                        });
+                    }
+                    
+                    // Then add the qualified tier (highlighted)
+                    bonusBreakdown.push({
+                        name: highestTier.name,
+                        bonus: highestTier.bonus,
+                        isHighlighted: true
+                    });
+                } else {
+                    // Not first year: only get the highest tier bonus (highlighted)
+                    totalBonus += highestTier.bonus;
+                    bonusBreakdown.push({
+                        name: highestTier.name,
+                        bonus: highestTier.bonus,
+                        isHighlighted: true
+                    });
+                }
+            }
+            
+            // Display results
+            document.getElementById('sb-highest-tier').textContent = highestTier ? highestTier.name : 'None';
+            document.getElementById('sb-first-year-status').textContent = isFirstYear ? 'Yes' : 'No';
+            
+            // Populate bonus breakdown
+            const breakdownContainer = document.getElementById('sb-bonus-breakdown');
+            breakdownContainer.innerHTML = '';
+            
+            if (bonusBreakdown.length > 0) {
+                bonusBreakdown.forEach(item => {
+                    const breakdownItem = document.createElement('div');
+                    breakdownItem.className = 'result-item';
+                    
+                    breakdownItem.innerHTML = `
+                        <span>${item.name} Bonus:</span>
+                        <span>$${item.bonus.toLocaleString('en-US')}</span>
+                    `;
+                    breakdownContainer.appendChild(breakdownItem);
+                });
+            } else {
+                const noBonus = document.createElement('div');
+                noBonus.className = 'result-item';
+                noBonus.innerHTML = `
+                    <span>No Tier Qualified</span>
+                    <span>$0</span>
+                `;
+                breakdownContainer.appendChild(noBonus);
+            }
+            
+            document.getElementById('sb-total-bonus').textContent = `$${totalBonus.toLocaleString('en-US')}`;
+            document.getElementById('step-bonus-result').classList.add('show');
+        }
+
+        function calculateSummary() {
+            let grandTotal = 0;
+            
+            // Helper function to extract numeric value from formatted strings
+            function extractValue(text) {
+                if (!text || text === '$0.00' || text === 'Not Calculated' || text === '-') return 0;
+                const cleaned = text.replace(/[$,]/g, '');
+                return parseFloat(cleaned) || 0;
+            }
+            
+            // Commission Calculator
+            const commissionElement = document.getElementById('net-commission');
+            const commissionValue = commissionElement ? extractValue(commissionElement.textContent) : 0;
+            const commissionCalculated = document.getElementById('commission-result')?.classList.contains('show') || false;
+            
+            document.getElementById('commission-status').textContent = commissionCalculated ? 'Calculated' : 'Not Calculated';
+            document.getElementById('commission-total').textContent = `$${commissionValue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            grandTotal += commissionValue;
+            
+            // Recruiter Override
+            const recruiterElement = document.getElementById('rec-grand-total');
+            const recruiterValue = recruiterElement ? extractValue(recruiterElement.textContent) : 0;
+            const recruiterCalculated = document.getElementById('recruiter-result')?.classList.contains('show') || false;
+            
+            document.getElementById('recruiter-status').textContent = recruiterCalculated ? 'Calculated' : 'Not Calculated';
+            document.getElementById('recruiter-total').textContent = `$${recruiterValue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            grandTotal += recruiterValue;
+            
+            // Management Override
+            const managementElement = document.getElementById('mgmt-grand-total');
+            const managementValue = managementElement ? extractValue(managementElement.textContent) : 0;
+            const managementCalculated = document.getElementById('management-result')?.classList.contains('show') || false;
+            
+            document.getElementById('management-status').textContent = managementCalculated ? 'Calculated' : 'Not Calculated';
+            document.getElementById('management-total').textContent = `$${managementValue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            grandTotal += managementValue;
+            
+            // Profit Share
+            const profitShareElement = document.getElementById('ps-total-amount');
+            const profitShareValue = profitShareElement ? extractValue(profitShareElement.textContent) : 0;
+            const profitShareCalculated = document.getElementById('profit-share-result')?.classList.contains('show') || false;
+            
+            document.getElementById('profit-share-status').textContent = profitShareCalculated ? 'Calculated' : 'Not Calculated';
+            document.getElementById('profit-share-total').textContent = `$${profitShareValue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            grandTotal += profitShareValue;
+            
+            // Step Bonus
+            const stepBonusElement = document.getElementById('sb-total-bonus');
+            const stepBonusValue = stepBonusElement ? extractValue(stepBonusElement.textContent) : 0;
+            const stepBonusCalculated = document.getElementById('step-bonus-result')?.classList.contains('show') || false;
+            
+            document.getElementById('step-bonus-status').textContent = stepBonusCalculated ? 'Calculated' : 'Not Calculated';
+            document.getElementById('step-bonus-total').textContent = `$${stepBonusValue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            grandTotal += stepBonusValue;
+            
+            // Display Grand Total
+            document.getElementById('grand-total').textContent = `$${grandTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('summary-result').classList.add('show');
+        }
+
+        // Function to sync team data across Recruiter, Management, Profit Share, and Step Bonus tabs
+        function syncTeamData() {
+            // Get values from Recruiter tab (source)
+            const rookieCount = parseFloat(document.getElementById('rookie-count').value) || 0;
+            const vetCount = parseFloat(document.getElementById('vet-count').value) || 0;
+            const rookieAvgRevenue = parseFloat(document.getElementById('rookie-avg-revenue').value) || 0;
+            const vetAvgRevenue = parseFloat(document.getElementById('vet-avg-revenue').value) || 0;
+            const rookieAvgMonths = document.getElementById('rookie-avg-months').value;
+            const vetAvgMonths = document.getElementById('vet-avg-months').value;
+            
+            // Sync to Management tab
+            document.getElementById('mgmt-rookie-count').value = rookieCount;
+            document.getElementById('mgmt-vet-count').value = vetCount;
+            document.getElementById('mgmt-rookie-avg-revenue').value = rookieAvgRevenue;
+            document.getElementById('mgmt-vet-avg-revenue').value = vetAvgRevenue;
+            document.getElementById('mgmt-rookie-avg-months').value = rookieAvgMonths;
+            document.getElementById('mgmt-vet-avg-months').value = vetAvgMonths;
+            
+            // Sync to Profit Share tab
+            document.getElementById('ps-rookie-count').value = rookieCount;
+            document.getElementById('ps-vet-count').value = vetCount;
+            document.getElementById('ps-rookie-avg-revenue').value = rookieAvgRevenue;
+            document.getElementById('ps-vet-avg-revenue').value = vetAvgRevenue;
+            document.getElementById('ps-rookie-avg-months').value = rookieAvgMonths;
+            document.getElementById('ps-vet-avg-months').value = vetAvgMonths;
+            
+            // Calculate total team production for Step Bonus tab
+            const totalRookieRevenue = rookieCount * rookieAvgRevenue;
+            const totalVetRevenue = vetCount * vetAvgRevenue;
+            const totalTeamProduction = totalRookieRevenue + totalVetRevenue;
+            
+            // Sync calculated team production to Step Bonus tab
+            document.getElementById('sb-service-revenue').value = totalTeamProduction;
+        }
+
+        // Function to sync commission active revenue to step bonus personal revenue
+        function syncCommissionToStepBonus() {
+            // Get calculated active revenue from Commission Calculator results
+            const activeRevenueElement = document.getElementById('active-revenue');
+            if (activeRevenueElement && activeRevenueElement.textContent !== '$0.00') {
+                // Extract numeric value from formatted text (e.g., "$25,000.00" -> 25000)
+                const activeRevenueText = activeRevenueElement.textContent.replace(/[$,]/g, '');
+                const activeRevenue = parseFloat(activeRevenueText) || 0;
+                
+                // Sync to Step Bonus tab personal revenue
+                document.getElementById('sb-personal-revenue').value = activeRevenue;
+            }
+        }
+
+        // Format number inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const numberInputs = document.querySelectorAll('input[type="number"]');
+            numberInputs.forEach(input => {
+                input.addEventListener('input', function(e) {
+                    // Remove non-numeric characters except decimal point
+                    let value = e.target.value.replace(/[^0-9.]/g, '');
+                    
+                    // Ensure only one decimal point
+                    const parts = value.split('.');
+                    if (parts.length > 2) {
+                        value = parts[0] + '.' + parts.slice(1).join('');
+                    }
+                    
+                    e.target.value = value;
+                });
+            });
+            
+            // Add event listeners to Recruiter tab team fields for syncing
+            const recruiterTeamFields = [
+                'rookie-count',
+                'vet-count', 
+                'rookie-avg-revenue',
+                'vet-avg-revenue',
+                'rookie-avg-months',
+                'vet-avg-months'
+            ];
+            
+            recruiterTeamFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('input', syncTeamData);
+                    field.addEventListener('change', syncTeamData);
+                }
+            });
+            
+            // Note: Commission to Step Bonus sync will be triggered when commission is calculated
+            // The syncCommissionToStepBonus() function should be called from the calculateCommission() function
+            
+            // Initialize housing options
+            toggleHousingOptions();
+        });
+    </script>
+</body>
+</html>
