@@ -1476,7 +1476,7 @@
                     <div style="text-align: center; border-top: 3px solid #28a745; padding-top: 20px;">
                         <div style="font-size: 1.65em; font-weight: bold; color: #155724;">
                             <span style="margin-bottom: 8px; display: block; width: 100%;">TOTAL ESTIMATED COMPENSATION:</span>
-                            <span id="grand-total" style="font-size: 1.98em; color: #28a745; display: block; width: 100%; text-align: center; margin-top: 10px;">$0.00</span>
+                            <span id="grand-total" style="font-size: 1.6em; color: #28a745; display: block; width: 100%; text-align: center; margin-top: 10px;">$0.00</span>
                         </div>
                     </div>
                 </div>
@@ -2307,7 +2307,7 @@
             grandTotal += stepBonusValue;
             
             // Display Grand Total
-            document.getElementById('grand-total').textContent = `$${grandTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('grand-total').textContent = `$${Math.round(grandTotal).toLocaleString('en-US')}`;
             document.getElementById('summary-result').classList.add('show');
         }
 
