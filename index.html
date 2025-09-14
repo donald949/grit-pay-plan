@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grit Payplan Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -12,175 +13,396 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
             min-height: 100vh;
             padding: 20px;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 40px;
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #2c3e50;
+            letter-spacing: -1px;
         }
 
         .tabs {
             display: flex;
-            margin-bottom: 30px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 40px;
+            border-radius: 16px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e8ecef;
+            background: #f8f9fa;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
         }
 
         .tab {
             flex: 1;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 16px 12px;
+            background: transparent;
             border: none;
-            color: white;
+            color: #6c757d;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            min-width: 120px;
         }
 
         .tab:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: #e9ecef;
+            color: #495057;
         }
 
         .tab.active {
-            background: rgba(255, 255, 255, 0.3);
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            background: #007bff;
+            color: white;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .tab-content {
             display: none;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid #e8ecef;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
         }
 
         .tab-content.active {
             display: block;
         }
 
+        h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #007bff;
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
-            font-size: 16px;
+            font-weight: 600;
+            font-size: 15px;
+            color: #495057;
         }
 
         input, select {
             width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
+            padding: 14px 16px;
+            border: 2px solid #e8ecef;
+            border-radius: 10px;
+            font-size: 15px;
+            background: #ffffff;
+            color: #495057;
+            transition: all 0.3s ease;
         }
 
         input:focus, select:focus {
             outline: none;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        input:hover, select:hover {
+            border-color: #6c757d;
         }
 
         .calculate-btn {
             width: 100%;
-            padding: 15px;
-            background: #ffdd00;
-            color: #333;
+            padding: 18px;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 20px;
+            margin-top: 32px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .calculate-btn:hover {
-            background: #ffcc00;
+            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 221, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .export-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+            text-decoration: none;
+        }
+
+        .export-btn:hover {
+            background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .export-btn svg {
+            margin-right: 8px;
         }
 
         .result {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(0, 255, 0, 0.1);
-            border: 2px solid rgba(0, 255, 0, 0.3);
-            border-radius: 10px;
+            margin-top: 40px;
+            padding: 32px;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 2px solid #28a745;
+            border-radius: 16px;
             display: none;
+            box-shadow: 0 8px 32px rgba(40, 167, 69, 0.1);
         }
 
         .result.show {
             display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .result-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(40, 167, 69, 0.2);
         }
 
         .result-item:last-child {
             border-bottom: none;
-            font-weight: bold;
-            font-size: 1.2em;
+            font-weight: 700;
+            font-size: 1.3em;
+            color: #155724;
+            background: rgba(255, 255, 255, 0.7);
+            margin: 16px -16px -16px -16px;
+            padding: 20px 16px;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .result-item span:first-child {
+            color: #155724;
+            font-weight: 600;
+        }
+
+        .result-item span:last-child {
+            color: #28a745;
+            font-weight: 700;
+            font-size: 1.1em;
         }
 
         .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 12px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e8ecef;
         }
 
         .checkbox-group input[type="checkbox"] {
-            width: auto;
+            width: 18px;
+            height: 18px;
             margin: 0;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-size: 14px;
         }
 
         h3 {
-            border-bottom: 2px solid rgba(255, 221, 0, 0.5);
-            padding-bottom: 5px;
+            color: #007bff;
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 32px 0 20px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #007bff;
         }
 
         h4 {
-            border-bottom: 1px solid rgba(255, 221, 0, 0.3);
-            padding-bottom: 3px;
+            color: #007bff;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin: 24px 0 16px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #007bff;
         }
 
         .two-column {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 24px;
         }
 
-        @media (max-width: 600px) {
+        small {
+            color: #dc3545 !important;
+            font-weight: 500;
+            display: block;
+            margin-top: 4px;
+        }
+
+        /* Professional styling for notes */
+        div[style*="background: rgba(255, 221, 0, 0.1)"] {
+            background: #fff3cd !important;
+            border: 1px solid #ffeaa7 !important;
+            border-radius: 12px !important;
+            padding: 20px !important;
+        }
+
+        div[style*="background: rgba(255, 221, 0, 0.1)"] p {
+            color: #856404 !important;
+            margin: 0 !important;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                margin: 0;
+                padding: 20px;
+                border-radius: 16px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            }
+
+            .tabs {
+                margin-bottom: 24px;
+                border-radius: 12px;
+            }
+
+            .tab {
+                min-width: 140px;
+                padding: 14px 16px;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
             .two-column {
                 grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+                margin-bottom: 24px;
+            }
+
+            h2 {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            input, select {
+                padding: 16px;
+                font-size: 16px;
+                border-radius: 8px;
+            }
+
+            .calculate-btn {
+                padding: 16px;
+                font-size: 15px;
+                margin-top: 24px;
+            }
+
+            .result {
+                margin-top: 24px;
+                padding: 20px;
+            }
+
+            .result-item {
+                padding: 12px 0;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .tab {
+                min-width: 130px;
+                padding: 12px 14px;
+                font-size: 12px;
+            }
+
+            .tab-content {
+                padding: 16px;
+            }
+
+            input, select {
+                padding: 14px;
+                font-size: 16px;
             }
         }
     </style>
@@ -190,7 +412,7 @@
         <h1>GRIT PAYPLAN CALCULATOR</h1>
         
         <div class="tabs">
-            <button class="tab active" onclick="openTab('commission')">Commission Calculator</button>
+            <button class="tab active" onclick="openTab('commission')">Personal</button>
             <button class="tab" onclick="openTab('recruiter')">Recruiter</button>
             <button class="tab" onclick="openTab('management')">Management</button>
             <button class="tab" onclick="openTab('profit-share')">Profit Share</button>
@@ -210,7 +432,7 @@
             </div>
             
             <!-- Revenue Calculation Section -->
-            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Revenue Calculation</h3>
+            <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Revenue Calculation</h3>
             <div class="form-group">
                 <label for="accounts-sold">Number of Accounts Sold:</label>
                 <input type="number" id="accounts-sold" placeholder="Enter number of accounts" min="0" onchange="calculateRevenue()" oninput="calculateRevenue()">
@@ -232,7 +454,7 @@
             </div>
             
             <!-- Housing Section -->
-            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Housing & Duration</h3>
+            <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Housing & Duration</h3>
             <div class="form-group">
                 <label for="months-selling">Months Selling:</label>
                 <input type="number" id="months-selling" placeholder="Enter number of months" min="1" max="12" value="1">
@@ -258,23 +480,33 @@
             </div>
             
             <!-- Requirements Section -->
-            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Requirements</h3>
+            <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Requirements</h3>
             <div class="two-column">
                 <div class="form-group">
                     <label for="multi-year-rate">Multi-Year Percentage (%):</label>
                     <input type="number" id="multi-year-rate" placeholder="Enter multi-year percentage" min="0" max="100" step="0.1">
-                    <small style="color: #ffdd00; font-size: 12px;">Need 70%+ to avoid $50/account deduction</small>
+                    <small style="color: #dc3545; font-size: 12px; font-weight: 600;">Need 70%+ to avoid $50/account deduction</small>
                 </div>
                 <div class="form-group">
                     <label for="welcome-call-rate">Welcome Call Percentage (%):</label>
                     <input type="number" id="welcome-call-rate" placeholder="Enter welcome call percentage" min="0" max="100" step="0.1">
-                    <small style="color: #ffdd00; font-size: 12px;">Need 90%+ to avoid $50/account deduction</small>
+                    <small style="color: #dc3545; font-size: 12px; font-weight: 600;">Need 90%+ to avoid $50/account deduction</small>
                 </div>
             </div>
             
             <button class="calculate-btn" onclick="calculateCommission()">Calculate Commission</button>
             
             <div id="commission-result" class="result">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #155724;">Personal Commission Results</h3>
+                    <button class="export-btn" onclick="exportPersonalPDF()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
+                </div>
                 <div class="result-item">
                     <span>Serviced Revenue:</span>
                     <span id="serviced-revenue">$0.00</span>
@@ -316,7 +548,7 @@
                     <span id="net-backend-commission">$0.00</span>
                 </div>
                 
-                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Backend Payment Schedule</h4>
+                <h4 style="margin: 20px 0 10px 0; color: #007bff;">Backend Payment Schedule</h4>
                 <div class="result-item">
                     <span>Monthly Payments (4 months):</span>
                     <span id="monthly-payment">$0.00</span>
@@ -332,7 +564,7 @@
             </div>
             
             <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
-                <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                <p style="color: #856404; font-size: 14px; margin: 0; text-align: center;">
                     <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
                 </p>
             </div>
@@ -370,7 +602,7 @@
             </div>
             
             <!-- Multiple Recruits Section -->
-            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Total recruiting override</h3>
+            <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Total recruiting override</h3>
             
             <div class="form-group">
                 <label for="multi-recruiter-year">Recruiter Year for Multiple Recruits:</label>
@@ -418,8 +650,18 @@
             <button class="calculate-btn" onclick="calculateRecruiter()">Calculate Recruiter Override</button>
             
             <div id="recruiter-result" class="result">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #155724;">Recruiter Override Results</h3>
+                    <button class="export-btn" onclick="exportRecruiterPDF()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
+                </div>
                 <div id="single-rep-section">
-                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Single Rep Override</h4>
+                    <h4 style="margin: 20px 0 10px 0; color: #007bff;">Single Rep Override</h4>
                     <div class="result-item">
                         <span>Recruiter Year:</span>
                         <span id="rec-year">-</span>
@@ -439,7 +681,7 @@
                 </div>
                 
                 <div id="multiple-recruits-section">
-                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Total recruiting override</h4>
+                    <h4 style="margin: 20px 0 10px 0; color: #007bff;">Total recruiting override</h4>
                     <div class="result-item">
                         <span>Rookies Override:</span>
                         <span id="rec-rookies-total">$0.00</span>
@@ -454,7 +696,7 @@
                     </div>
                 </div>
                 
-                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Grand Total</h4>
+                <h4 style="margin: 20px 0 10px 0; color: #007bff;">Grand Total</h4>
                 <div class="result-item">
                     <span>Total Override Payment:</span>
                     <span id="rec-grand-total">$0.00</span>
@@ -462,7 +704,7 @@
             </div>
             
             <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
-                <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                <p style="color: #856404; font-size: 14px; margin: 0; text-align: center;">
                     <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
                 </p>
             </div>
@@ -473,7 +715,7 @@
             <h2>Management Override Calculator</h2>
             
             <!-- Single Rep Management Override -->
-            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Single Rep Management Override</h3>
+            <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Single Rep Management Override</h3>
             <div class="form-group">
                 <label for="mgmt-payscale">Select Rep Payscale:</label>
                 <select id="mgmt-payscale">
@@ -493,7 +735,7 @@
             </div>
             
             <!-- Team Management Override -->
-            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Team Management Override</h3>
+            <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Team Management Override</h3>
             
             <div class="two-column">
                 <div class="form-group">
@@ -531,8 +773,18 @@
             <button class="calculate-btn" onclick="calculateManagement()">Calculate Management Override</button>
             
             <div id="management-result" class="result">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #155724;">Management Override Results</h3>
+                    <button class="export-btn" onclick="exportManagementPDF()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
+                </div>
                 <div id="single-mgmt-section">
-                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Single Rep Override</h4>
+                    <h4 style="margin: 20px 0 10px 0; color: #007bff;">Single Rep Override</h4>
                     <div class="result-item">
                         <span>Rep Payscale:</span>
                         <span id="mgmt-payscale-result">-</span>
@@ -552,7 +804,7 @@
                 </div>
                 
                 <div id="team-mgmt-section">
-                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Team Management Override</h4>
+                    <h4 style="margin: 20px 0 10px 0; color: #007bff;">Team Management Override</h4>
                     <div class="result-item">
                         <span>Rookies Override:</span>
                         <span id="mgmt-rookies-total">$0.00</span>
@@ -567,7 +819,7 @@
                     </div>
                 </div>
                 
-                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Grand Total</h4>
+                <h4 style="margin: 20px 0 10px 0; color: #007bff;">Grand Total</h4>
                 <div class="result-item">
                     <span>Total Management Override:</span>
                     <span id="mgmt-grand-total">$0.00</span>
@@ -575,7 +827,7 @@
             </div>
             
             <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
-                <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                <p style="color: #856404; font-size: 14px; margin: 0; text-align: center;">
                     <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
                 </p>
             </div>
@@ -586,7 +838,7 @@
             <h2>Profit Share Calculator</h2>
             
             <!-- Rep Information -->
-            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Rep Information</h3>
+            <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Rep Information</h3>
             <div class="two-column">
                 <div class="form-group">
                     <label for="ps-payscale">Rep Payscale:</label>
@@ -613,15 +865,15 @@
             </div>
             
             <!-- Downline -->
-            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Downline Profit Share</h3>
+            <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Downline Profit Share</h3>
             <div class="form-group">
                 <label for="downline-percentage">Downline Profit Share Percentage (%):</label>
                 <input type="number" id="downline-percentage" placeholder="Enter percentage (leave empty if no one below you)" min="0" max="100" step="0.1">
-                <small style="color: #ffdd00; font-size: 12px;">Leave empty if no one is below you in the downline</small>
+                <small style="color: #6c757d; font-size: 12px; font-style: italic;">Leave empty if no one is below you in the downline</small>
             </div>
             
             <!-- Team Profit Share -->
-            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Team Profit Share</h3>
+            <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Team Profit Share</h3>
             
             <div class="two-column">
                 <div class="form-group">
@@ -659,8 +911,18 @@
             <button class="calculate-btn" onclick="calculateProfitShare()">Calculate Profit Share</button>
             
             <div id="profit-share-result" class="result">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #155724;">Profit Share Results</h3>
+                    <button class="export-btn" onclick="exportProfitSharePDF()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
+                </div>
                 <div id="single-ps-section">
-                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Single Rep Profit Share</h4>
+                    <h4 style="margin: 20px 0 10px 0; color: #007bff;">Single Rep Profit Share</h4>
                     <div class="result-item">
                         <span>Rep Payscale:</span>
                         <span id="ps-payscale-result">-</span>
@@ -700,7 +962,7 @@
                 </div>
                 
                 <div id="team-ps-section">
-                    <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Team Profit Share</h4>
+                    <h4 style="margin: 20px 0 10px 0; color: #007bff;">Team Profit Share</h4>
                     <div class="result-item">
                         <span>Rookies Profit Share:</span>
                         <span id="ps-rookies-total">$0.00</span>
@@ -715,7 +977,7 @@
                     </div>
                 </div>
                 
-                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Grand Total</h4>
+                <h4 style="margin: 20px 0 10px 0; color: #007bff;">Grand Total</h4>
                 <div class="result-item">
                     <span>Total Profit Share:</span>
                     <span id="ps-total-amount">$0.00</span>
@@ -723,7 +985,7 @@
             </div>
             
             <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
-                <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                <p style="color: #856404; font-size: 14px; margin: 0; text-align: center;">
                     <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
                 </p>
             </div>
@@ -734,7 +996,7 @@
             <h2>Step Bonus Calculator</h2>
             
             <!-- Revenue Information -->
-            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Revenue Information</h3>
+            <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Revenue Information</h3>
             <div class="two-column">
                 <div class="form-group">
                     <label for="sb-service-revenue">Team Serviced Revenue ($):</label>
@@ -748,7 +1010,7 @@
             
             
             <!-- First Year Qualification -->
-            <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Qualification Status</h3>
+            <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Qualification Status</h3>
             <div class="checkbox-group">
                 <input type="checkbox" id="first-year-qualifying">
                 <label for="first-year-qualifying">This is my first year qualifying for step bonus</label>
@@ -758,7 +1020,17 @@
             <button class="calculate-btn" onclick="calculateStepBonus()">Calculate Step Bonus</button>
             
             <div id="step-bonus-result" class="result">
-                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Qualification Results</h4>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #155724;">Step Bonus Results</h3>
+                    <button class="export-btn" onclick="exportStepBonusPDF()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
+                </div>
+                <h4 style="margin: 20px 0 10px 0; color: #007bff;">Qualification Results</h4>
                 <div class="result-item">
                     <span>Highest Tier Achieved:</span>
                     <span id="sb-highest-tier">None</span>
@@ -768,12 +1040,12 @@
                     <span id="sb-first-year-status">No</span>
                 </div>
                 
-                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Bonus Breakdown</h4>
+                <h4 style="margin: 20px 0 10px 0; color: #007bff;">Bonus Breakdown</h4>
                 <div id="sb-bonus-breakdown">
                     <!-- Bonus items will be populated here -->
                 </div>
                 
-                <h4 style="margin: 20px 0 10px 0; color: #ffdd00;">Total</h4>
+                <h4 style="margin: 20px 0 10px 0; color: #007bff;">Total</h4>
                 <div class="result-item">
                     <span>Total Step Bonus:</span>
                     <span id="sb-total-bonus">$0.00</span>
@@ -781,7 +1053,7 @@
             </div>
             
             <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
-                <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                <p style="color: #856404; font-size: 14px; margin: 0; text-align: center;">
                     <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
                 </p>
             </div>
@@ -796,10 +1068,20 @@
             </div>
             
             <div id="summary-result" class="result">
-                <h3 style="margin: 20px 0 15px 0; color: #ffdd00;">Compensation Breakdown by Category</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #155724;">Total Compensation Summary</h3>
+                    <button class="export-btn" onclick="exportSummaryPDF()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
+                </div>
+                <h3 style="margin: 20px 0 15px 0; color: #2c3e50;">Compensation Breakdown by Category</h3>
                 
                 <div id="commission-summary" class="summary-section">
-                    <h4 style="margin: 15px 0 10px 0; color: #ffdd00;">Commission Calculator</h4>
+                    <h4 style="margin: 15px 0 10px 0; color: #007bff;">Commission Calculator</h4>
                     <div class="result-item">
                         <span>Status:</span>
                         <span id="commission-status">Not Calculated</span>
@@ -811,7 +1093,7 @@
                 </div>
                 
                 <div id="recruiter-summary" class="summary-section">
-                    <h4 style="margin: 15px 0 10px 0; color: #ffdd00;">Recruiter Override</h4>
+                    <h4 style="margin: 15px 0 10px 0; color: #007bff;">Recruiter Override</h4>
                     <div class="result-item">
                         <span>Status:</span>
                         <span id="recruiter-status">Not Calculated</span>
@@ -823,7 +1105,7 @@
                 </div>
                 
                 <div id="management-summary" class="summary-section">
-                    <h4 style="margin: 15px 0 10px 0; color: #ffdd00;">Management Override</h4>
+                    <h4 style="margin: 15px 0 10px 0; color: #007bff;">Management Override</h4>
                     <div class="result-item">
                         <span>Status:</span>
                         <span id="management-status">Not Calculated</span>
@@ -835,7 +1117,7 @@
                 </div>
                 
                 <div id="profit-share-summary" class="summary-section">
-                    <h4 style="margin: 15px 0 10px 0; color: #ffdd00;">Profit Share</h4>
+                    <h4 style="margin: 15px 0 10px 0; color: #007bff;">Profit Share</h4>
                     <div class="result-item">
                         <span>Status:</span>
                         <span id="profit-share-status">Not Calculated</span>
@@ -847,7 +1129,7 @@
                 </div>
                 
                 <div id="step-bonus-summary" class="summary-section">
-                    <h4 style="margin: 15px 0 10px 0; color: #ffdd00;">Step Bonus</h4>
+                    <h4 style="margin: 15px 0 10px 0; color: #007bff;">Step Bonus</h4>
                     <div class="result-item">
                         <span>Status:</span>
                         <span id="step-bonus-status">Not Calculated</span>
@@ -858,15 +1140,15 @@
                     </div>
                 </div>
                 
-                <div style="border-top: 3px solid #ffdd00; margin-top: 30px; padding-top: 20px;">
-                    <div class="result-item" style="font-size: 1.5em; font-weight: bold; color: #ffdd00;">
+                <div style="border-top: 3px solid #28a745; margin-top: 30px; padding-top: 20px;">
+                    <div class="result-item" style="font-size: 1.5em; font-weight: bold; color: #155724;">
                         <span>TOTAL ESTIMATED COMPENSATION:</span>
                         <span id="grand-total">$0.00</span>
                     </div>
                 </div>
                 
                 <div style="margin-top: 20px; padding: 15px; background: rgba(255, 221, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 221, 0, 0.3);">
-                    <p style="color: #ffdd00; font-size: 14px; margin: 0; text-align: center;">
+                    <p style="color: #856404; font-size: 14px; margin: 0; text-align: center;">
                         <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
                     </p>
                 </div>
@@ -1762,6 +2044,364 @@
             // Initialize housing options
             toggleHousingOptions();
         });
+
+        // PDF Export Functions
+        function exportPersonalPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(40, 62, 80);
+            doc.text('GRIT Payplan Calculator - Personal Commission', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(60, 60, 60);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            let yPos = 65;
+            
+            // Input Data
+            doc.setFontSize(14);
+            doc.setTextColor(40, 62, 80);
+            doc.text('Input Data:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            const payscale = document.getElementById('payscale').value;
+            const revenue = document.getElementById('revenue').value || '0';
+            const accountsSold = document.getElementById('accounts-sold').value || '0';
+            const avgContract = document.getElementById('avg-contract').value || '0';
+            const cancelationRate = document.getElementById('cancelation-rate').value || '20';
+            const monthsSelling = document.getElementById('months-selling').value || '1';
+            const multiYearRate = document.getElementById('multi-year-rate').value || '0';
+            const welcomeCallRate = document.getElementById('welcome-call-rate').value || '0';
+            
+            doc.text(`Payscale: ${payscale.charAt(0).toUpperCase() + payscale.slice(1)}`, 25, yPos += 15);
+            doc.text(`Accounts Sold: ${accountsSold}`, 25, yPos += 12);
+            doc.text(`Average Contract Value: $${parseFloat(avgContract || 0).toLocaleString()}`, 25, yPos += 12);
+            doc.text(`Total Serviced Revenue: $${parseFloat(revenue || 0).toLocaleString()}`, 25, yPos += 12);
+            doc.text(`Cancelation Rate: ${cancelationRate}%`, 25, yPos += 12);
+            doc.text(`Months Selling: ${monthsSelling}`, 25, yPos += 12);
+            doc.text(`Multi-Year Rate: ${multiYearRate}%`, 25, yPos += 12);
+            doc.text(`Welcome Call Rate: ${welcomeCallRate}%`, 25, yPos += 12);
+            
+            if (payscale === 'rookie') {
+                const housingType = document.getElementById('housing-type').value;
+                const rentCredit = document.getElementById('rent-credit').checked;
+                doc.text(`Housing Type: ${housingType === 'shared' ? 'Shared ($950/month)' : 'Private ($1900/month)'}`, 25, yPos += 12);
+                doc.text(`Rent Credit Eligible: ${rentCredit ? 'Yes' : 'No'}`, 25, yPos += 12);
+            }
+            
+            // Results
+            yPos += 20;
+            doc.setFontSize(14);
+            doc.setTextColor(40, 62, 80);
+            doc.text('Calculated Results:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            const servicedRevenue = document.getElementById('serviced-revenue').textContent;
+            const activeRevenue = document.getElementById('active-revenue').textContent;
+            const totalCommissionOwed = document.getElementById('total-commission-owed').textContent;
+            const grossUpfrontCommission = document.getElementById('gross-upfront-commission').textContent;
+            const netUpfrontCommission = document.getElementById('net-upfront-commission').textContent;
+            const backendCommission = document.getElementById('backend-commission').textContent;
+            const netBackendCommission = document.getElementById('net-backend-commission').textContent;
+            const housingCosts = document.getElementById('housing-costs').textContent;
+            const monthlyPayment = document.getElementById('monthly-payment').textContent;
+            const finalPayment = document.getElementById('final-payment').textContent;
+            const netCommission = document.getElementById('net-commission').textContent;
+            
+            doc.text(`Serviced Revenue: ${servicedRevenue}`, 25, yPos += 15);
+            doc.text(`Active Revenue (after attrition): ${activeRevenue}`, 25, yPos += 12);
+            doc.text(`Total Commission Owed: ${totalCommissionOwed}`, 25, yPos += 12);
+            doc.text(`Gross Upfront Commission: ${grossUpfrontCommission}`, 25, yPos += 12);
+            doc.text(`Total Housing Costs: ${housingCosts}`, 25, yPos += 12);
+            doc.text(`Net Upfront Commission: ${netUpfrontCommission}`, 25, yPos += 12);
+            doc.text(`Backend Commission Due: ${backendCommission}`, 25, yPos += 12);
+            doc.text(`Net Backend Commission: ${netBackendCommission}`, 25, yPos += 12);
+            doc.text(`Monthly Payments (4 months): ${monthlyPayment}`, 25, yPos += 12);
+            doc.text(`Final Payments (2 payments): ${finalPayment}`, 25, yPos += 12);
+            
+            // Total
+            yPos += 10;
+            doc.setFontSize(12);
+            doc.setTextColor(21, 87, 36);
+            doc.text(`Net Commission Total: ${netCommission}`, 25, yPos += 15);
+            
+            doc.save('GRIT_Personal_Commission_Report.pdf');
+        }
+
+        function exportRecruiterPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(40, 62, 80);
+            doc.text('GRIT Payplan Calculator - Recruiter Override', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(60, 60, 60);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            let yPos = 65;
+            
+            // Input Data
+            doc.setFontSize(14);
+            doc.setTextColor(40, 62, 80);
+            doc.text('Input Data:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            
+            // Single recruiter data
+            const recruiterYear = document.getElementById('recruiter-year').value;
+            const repRevenue = document.getElementById('recruiter-rep-revenue').value || '0';
+            const monthsWorked = document.getElementById('recruiter-months-worked').value || '1';
+            
+            doc.text('Single Recruiter Override:', 25, yPos += 15);
+            doc.text(`  Recruiter Year: ${recruiterYear}`, 25, yPos += 12);
+            doc.text(`  Rep Revenue: $${parseFloat(repRevenue).toLocaleString()}`, 25, yPos += 12);
+            doc.text(`  Months Worked: ${monthsWorked}`, 25, yPos += 12);
+            
+            // Multiple recruits data
+            const multiRecruiterYear = document.getElementById('multi-recruiter-year').value;
+            const rookieCount = document.getElementById('rookie-count').value || '0';
+            const vetCount = document.getElementById('vet-count').value || '0';
+            const rookieAvgRevenue = document.getElementById('rookie-avg-revenue').value || '0';
+            const vetAvgRevenue = document.getElementById('vet-avg-revenue').value || '0';
+            
+            doc.text('Multiple Recruits Override:', 25, yPos += 20);
+            doc.text(`  Recruiter Year: ${multiRecruiterYear}`, 25, yPos += 12);
+            doc.text(`  Rookies Count: ${rookieCount}`, 25, yPos += 12);
+            doc.text(`  Veterans Count: ${vetCount}`, 25, yPos += 12);
+            doc.text(`  Average Rookie Revenue: $${parseFloat(rookieAvgRevenue).toLocaleString()}`, 25, yPos += 12);
+            doc.text(`  Average Veteran Revenue: $${parseFloat(vetAvgRevenue).toLocaleString()}`, 25, yPos += 12);
+            
+            // Results
+            yPos += 20;
+            doc.setFontSize(14);
+            doc.setTextColor(40, 62, 80);
+            doc.text('Calculated Results:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            const grandTotal = document.getElementById('rec-grand-total').textContent;
+            
+            doc.text(`Total Override Payment: ${grandTotal}`, 25, yPos += 15);
+            
+            doc.save('GRIT_Recruiter_Override_Report.pdf');
+        }
+
+        function exportManagementPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(40, 62, 80);
+            doc.text('GRIT Payplan Calculator - Management Override', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(60, 60, 60);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            let yPos = 65;
+            
+            // Input Data
+            doc.setFontSize(14);
+            doc.setTextColor(40, 62, 80);
+            doc.text('Input Data:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            
+            const mgmtPayscale = document.getElementById('mgmt-payscale').value;
+            const mgmtRepRevenue = document.getElementById('mgmt-rep-revenue').value || '0';
+            const mgmtMonthsWorked = document.getElementById('mgmt-months-worked').value || '1';
+            const mgmtRookieCount = document.getElementById('mgmt-rookie-count').value || '0';
+            const mgmtVetCount = document.getElementById('mgmt-vet-count').value || '0';
+            const mgmtRookieAvgRevenue = document.getElementById('mgmt-rookie-avg-revenue').value || '0';
+            const mgmtVetAvgRevenue = document.getElementById('mgmt-vet-avg-revenue').value || '0';
+            
+            doc.text(`Rep Payscale: ${mgmtPayscale.charAt(0).toUpperCase() + mgmtPayscale.slice(1)}`, 25, yPos += 15);
+            doc.text(`Single Rep Revenue: $${parseFloat(mgmtRepRevenue).toLocaleString()}`, 25, yPos += 12);
+            doc.text(`Months Worked: ${mgmtMonthsWorked}`, 25, yPos += 12);
+            doc.text(`Team Rookies Count: ${mgmtRookieCount}`, 25, yPos += 12);
+            doc.text(`Team Veterans Count: ${mgmtVetCount}`, 25, yPos += 12);
+            doc.text(`Average Rookie Revenue: $${parseFloat(mgmtRookieAvgRevenue).toLocaleString()}`, 25, yPos += 12);
+            doc.text(`Average Veteran Revenue: $${parseFloat(mgmtVetAvgRevenue).toLocaleString()}`, 25, yPos += 12);
+            
+            // Results
+            yPos += 20;
+            doc.setFontSize(14);
+            doc.setTextColor(40, 62, 80);
+            doc.text('Calculated Results:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            const mgmtGrandTotal = document.getElementById('mgmt-grand-total').textContent;
+            
+            doc.text(`Total Management Override: ${mgmtGrandTotal}`, 25, yPos += 15);
+            
+            doc.save('GRIT_Management_Override_Report.pdf');
+        }
+
+        function exportProfitSharePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(40, 62, 80);
+            doc.text('GRIT Payplan Calculator - Profit Share', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(60, 60, 60);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            let yPos = 65;
+            
+            // Input Data
+            doc.setFontSize(14);
+            doc.setTextColor(40, 62, 80);
+            doc.text('Input Data:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            
+            const psPayscale = document.getElementById('ps-payscale').value;
+            const psActiveRevenue = document.getElementById('ps-active-revenue').value || '0';
+            const psMonthsWorked = document.getElementById('ps-months-worked').value || '1';
+            const yourPsPercentage = document.getElementById('your-ps-percentage').value || '0';
+            const downlinePercentage = document.getElementById('downline-percentage').value || '0';
+            
+            doc.text(`Rep Payscale: ${psPayscale.charAt(0).toUpperCase() + psPayscale.slice(1)}`, 25, yPos += 15);
+            doc.text(`Active Revenue: $${parseFloat(psActiveRevenue).toLocaleString()}`, 25, yPos += 12);
+            doc.text(`Months Worked: ${psMonthsWorked}`, 25, yPos += 12);
+            doc.text(`Your Profit Share Percentage: ${yourPsPercentage}%`, 25, yPos += 12);
+            doc.text(`Downline Percentage: ${downlinePercentage}%`, 25, yPos += 12);
+            
+            // Results
+            yPos += 20;
+            doc.setFontSize(14);
+            doc.setTextColor(40, 62, 80);
+            doc.text('Calculated Results:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            const psTotalAmount = document.getElementById('ps-total-amount').textContent;
+            
+            doc.text(`Total Profit Share: ${psTotalAmount}`, 25, yPos += 15);
+            
+            doc.save('GRIT_Profit_Share_Report.pdf');
+        }
+
+        function exportStepBonusPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(40, 62, 80);
+            doc.text('GRIT Payplan Calculator - Step Bonus', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(60, 60, 60);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            let yPos = 65;
+            
+            // Input Data
+            doc.setFontSize(14);
+            doc.setTextColor(40, 62, 80);
+            doc.text('Input Data:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            
+            const sbServiceRevenue = document.getElementById('sb-service-revenue').value || '0';
+            const sbPersonalRevenue = document.getElementById('sb-personal-revenue').value || '0';
+            const firstYearQualifying = document.getElementById('first-year-qualifying').checked;
+            
+            doc.text(`Team Serviced Revenue: $${parseFloat(sbServiceRevenue).toLocaleString()}`, 25, yPos += 15);
+            doc.text(`Personal Revenue: $${parseFloat(sbPersonalRevenue).toLocaleString()}`, 25, yPos += 12);
+            doc.text(`First Year Qualifying: ${firstYearQualifying ? 'Yes' : 'No'}`, 25, yPos += 12);
+            
+            // Results
+            yPos += 20;
+            doc.setFontSize(14);
+            doc.setTextColor(40, 62, 80);
+            doc.text('Calculated Results:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            const sbTotalBonus = document.getElementById('sb-total-bonus').textContent;
+            const sbHighestTier = document.getElementById('sb-highest-tier').textContent;
+            
+            doc.text(`Highest Tier Achieved: ${sbHighestTier}`, 25, yPos += 15);
+            doc.text(`Total Step Bonus: ${sbTotalBonus}`, 25, yPos += 12);
+            
+            doc.save('GRIT_Step_Bonus_Report.pdf');
+        }
+
+        function exportSummaryPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(40, 62, 80);
+            doc.text('GRIT Payplan Calculator - Summary Report', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(60, 60, 60);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            let yPos = 65;
+            
+            // Summary Results
+            doc.setFontSize(14);
+            doc.setTextColor(40, 62, 80);
+            doc.text('Total Compensation Breakdown:', 20, yPos);
+            yPos += 15;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            
+            const commissionTotal = document.getElementById('commission-total').textContent;
+            const recruiterTotal = document.getElementById('recruiter-total').textContent;
+            const managementTotal = document.getElementById('management-total').textContent;
+            const profitShareTotal = document.getElementById('profit-share-total').textContent;
+            const stepBonusTotal = document.getElementById('step-bonus-total').textContent;
+            const grandTotal = document.getElementById('grand-total').textContent;
+            
+            doc.text(`Personal Commission: ${commissionTotal}`, 25, yPos += 12);
+            doc.text(`Recruiter Override: ${recruiterTotal}`, 25, yPos += 12);
+            doc.text(`Management Override: ${managementTotal}`, 25, yPos += 12);
+            doc.text(`Profit Share: ${profitShareTotal}`, 25, yPos += 12);
+            doc.text(`Step Bonus: ${stepBonusTotal}`, 25, yPos += 12);
+            
+            // Grand Total
+            yPos += 15;
+            doc.setFontSize(12);
+            doc.setTextColor(21, 87, 36);
+            doc.text(`TOTAL ESTIMATED COMPENSATION: ${grandTotal}`, 25, yPos);
+            
+            doc.save('GRIT_Compensation_Summary_Report.pdf');
+        }
     </script>
 </body>
 </html>
