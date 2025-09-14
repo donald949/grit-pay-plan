@@ -259,15 +259,16 @@
         .result-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
+            align-items: flex-start;
+            padding: 12px 0;
             border-bottom: 1px solid rgba(40, 167, 69, 0.2);
+            gap: 10px;
         }
 
         .result-item:last-child {
             border-bottom: none;
             font-weight: 700;
-            font-size: 1.3em;
+            font-size: 1.32em;
             color: #155724;
             background: rgba(255, 255, 255, 0.7);
             margin: 16px -16px -16px -16px;
@@ -278,12 +279,46 @@
         .result-item span:first-child {
             color: #155724;
             font-weight: 600;
+            flex: 1;
+            line-height: 1.3;
+            font-size: 0.9em;
         }
 
         .result-item span:last-child {
             color: #28a745;
             font-weight: 700;
-            font-size: 1.1em;
+            font-size: 0.99em;
+            text-align: right;
+            flex-shrink: 0;
+            max-width: 40%;
+            word-break: break-word;
+        }
+        
+        /* Mobile specific improvements */
+        @media (max-width: 768px) {
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                padding: 8px 0;
+            }
+            
+            .result-item span:first-child {
+                font-size: 0.935em;
+                max-width: 100%;
+            }
+            
+            .result-item span:last-child {
+                font-size: 0.99em;
+                max-width: 100%;
+                text-align: left;
+                word-break: normal;
+            }
+            
+            .result-item:last-child {
+                font-size: 1.21em;
+                padding: 16px;
+            }
         }
 
         .checkbox-group {
@@ -598,15 +633,8 @@
             <button class="calculate-btn" onclick="calculateCommission()">Calculate Commission</button>
             
             <div id="commission-result" class="result">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="margin-bottom: 20px;">
                     <h3 style="margin: 0; color: #155724;">Personal Commission Results</h3>
-                    <button class="export-btn" onclick="exportPersonalPDF()">
-                        <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
-                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                        </svg>
-                        Export PDF
-                    </button>
                 </div>
                 <div class="result-item">
                     <span>Serviced Revenue:</span>
@@ -661,6 +689,16 @@
                 <div class="result-item">
                     <span>Net Commission Total:</span>
                     <span id="net-commission">$0.00</span>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(40, 167, 69, 0.2);">
+                    <button class="export-btn" onclick="exportPersonalPDF()">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
                 </div>
             </div>
             
@@ -779,15 +817,8 @@
             <button class="calculate-btn" onclick="calculateRecruiter()">Calculate Recruiter Override</button>
             
             <div id="recruiter-result" class="result">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="margin-bottom: 20px;">
                     <h3 style="margin: 0; color: #155724;">Recruiter Override Results</h3>
-                    <button class="export-btn" onclick="exportRecruiterPDF()">
-                        <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
-                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                        </svg>
-                        Export PDF
-                    </button>
                 </div>
                 <div id="single-rep-section">
                     <h4 style="margin: 20px 0 10px 0; color: #007bff;">Single Rep Override</h4>
@@ -829,6 +860,16 @@
                 <div class="result-item">
                     <span>Total Override Payment:</span>
                     <span id="rec-grand-total">$0.00</span>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(40, 167, 69, 0.2);">
+                    <button class="export-btn" onclick="exportRecruiterPDF()">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
                 </div>
             </div>
             
@@ -932,15 +973,8 @@
             <button class="calculate-btn" onclick="calculateManagement()">Calculate Management Override</button>
             
             <div id="management-result" class="result">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="margin-bottom: 20px;">
                     <h3 style="margin: 0; color: #155724;">Management Override Results</h3>
-                    <button class="export-btn" onclick="exportManagementPDF()">
-                        <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
-                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                        </svg>
-                        Export PDF
-                    </button>
                 </div>
                 <div id="single-mgmt-section">
                     <h4 style="margin: 20px 0 10px 0; color: #007bff;">Single Rep Override</h4>
@@ -982,6 +1016,16 @@
                 <div class="result-item">
                     <span>Total Management Override:</span>
                     <span id="mgmt-grand-total">$0.00</span>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(40, 167, 69, 0.2);">
+                    <button class="export-btn" onclick="exportManagementPDF()">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
                 </div>
             </div>
             
@@ -1026,15 +1070,29 @@
                     </div>
                 </div>
                 
-                <div class="two-column">
-                    <div class="form-group">
-                        <label for="ps-months-worked" style="color: #2c3e50;">Months Worked:</label>
-                        <input type="number" id="ps-months-worked" placeholder="Enter months worked" min="1" max="12" value="1">
+                <div class="form-group">
+                    <label for="ps-months-worked" style="color: #2c3e50;">Months Worked:</label>
+                    <input type="number" id="ps-months-worked" placeholder="Enter months worked" min="1" max="12" value="1">
+                </div>
+            </div>
+            
+            <!-- Your Profit Share Percentage Card -->
+            <div class="calculator-card" style="margin-bottom: 30px; padding: 25px; background: #ffffff; border-radius: 12px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); color: #2c3e50; border: 2px solid #007bff;">
+                <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <div style="background: #007bff; border-radius: 50%; padding: 12px; margin-right: 15px;">
+                        <svg width="24" height="24" fill="white" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                        </svg>
                     </div>
-                    <div class="form-group">
-                        <label for="your-ps-percentage" style="color: #2c3e50;">Your Profit Share Percentage (%):</label>
-                        <input type="number" id="your-ps-percentage" placeholder="Enter your percentage" min="0" max="100" step="0.1">
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.2em; font-weight: 600; color: #007bff;">Your Profit Share Percentage</h3>
+                        <p style="margin: 5px 0 0 0; opacity: 0.7; font-size: 0.9em; color: #6c757d;">Enter your personal profit share percentage</p>
                     </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="your-ps-percentage" style="color: #2c3e50;">Your Profit Share Percentage (%):</label>
+                    <input type="number" id="your-ps-percentage" placeholder="Enter your percentage" min="0" max="100" step="0.1">
                 </div>
             </div>
             
@@ -1115,15 +1173,8 @@
             <button class="calculate-btn" onclick="calculateProfitShare()">Calculate Profit Share</button>
             
             <div id="profit-share-result" class="result">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="margin-bottom: 20px;">
                     <h3 style="margin: 0; color: #155724;">Profit Share Results</h3>
-                    <button class="export-btn" onclick="exportProfitSharePDF()">
-                        <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
-                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                        </svg>
-                        Export PDF
-                    </button>
                 </div>
                 <div id="single-ps-section">
                     <h4 style="margin: 20px 0 10px 0; color: #007bff;">Single Rep Profit Share</h4>
@@ -1185,6 +1236,16 @@
                 <div class="result-item">
                     <span>Total Profit Share:</span>
                     <span id="ps-total-amount">$0.00</span>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(40, 167, 69, 0.2);">
+                    <button class="export-btn" onclick="exportProfitSharePDF()">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
                 </div>
             </div>
             
@@ -1252,15 +1313,8 @@
             <button class="calculate-btn" onclick="calculateStepBonus()">Calculate Step Bonus</button>
             
             <div id="step-bonus-result" class="result">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="margin-bottom: 20px;">
                     <h3 style="margin: 0; color: #155724;">Step Bonus Results</h3>
-                    <button class="export-btn" onclick="exportStepBonusPDF()">
-                        <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
-                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                        </svg>
-                        Export PDF
-                    </button>
                 </div>
                 <h4 style="margin: 20px 0 10px 0; color: #007bff;">Qualification Results</h4>
                 <div class="result-item">
@@ -1281,6 +1335,16 @@
                 <div class="result-item">
                     <span>Total Step Bonus:</span>
                     <span id="sb-total-bonus">$0.00</span>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(40, 167, 69, 0.2);">
+                    <button class="export-btn" onclick="exportStepBonusPDF()">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
                 </div>
             </div>
             
@@ -1318,28 +1382,19 @@
             <div id="summary-result" class="result">
                 <!-- Compensation Breakdown Card -->
                 <div class="calculator-card" style="margin-bottom: 30px; padding: 25px; background: #ffffff; border-radius: 12px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); color: #2c3e50; border: 2px solid #007bff;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-                        <div style="display: flex; align-items: center;">
-                            <div style="background: #007bff; border-radius: 50%; padding: 12px; margin-right: 15px;">
-                                <svg width="24" height="24" fill="white" viewBox="0 0 16 16">
-                                    <path d="M1.5 1A1.5 1.5 0 0 0 0 2.5v4A1.5 1.5 0 0 0 1.5 8h13A1.5 1.5 0 0 0 16 6.5v-4A1.5 1.5 0 0 0 14.5 1h-13zM1.5 2h13a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 .5-.5z"/>
-                                    <path d="M2 3a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 2 3zm0 2a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 2 5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1A.5.5 0 0 1 2 7z"/>
-                                    <path d="M1.5 9A1.5 1.5 0 0 0 0 10.5v3A1.5 1.5 0 0 0 1.5 15h13a1.5 1.5 0 0 0 1.5-1.5v-3A1.5 1.5 0 0 0 14.5 9h-13zM1.5 10h13a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5z"/>
-                                    <path d="M2 11a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 style="margin: 0; font-size: 1.2em; font-weight: 600; color: #007bff;">Compensation Breakdown</h3>
-                                <p style="margin: 5px 0 0 0; opacity: 0.7; font-size: 0.9em; color: #6c757d;">Detailed breakdown by category</p>
-                            </div>
-                        </div>
-                        <button class="export-btn" onclick="exportSummaryPDF()">
-                            <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
-                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                        <div style="background: #007bff; border-radius: 50%; padding: 12px; margin-right: 15px;">
+                            <svg width="24" height="24" fill="white" viewBox="0 0 16 16">
+                                <path d="M1.5 1A1.5 1.5 0 0 0 0 2.5v4A1.5 1.5 0 0 0 1.5 8h13A1.5 1.5 0 0 0 16 6.5v-4A1.5 1.5 0 0 0 14.5 1h-13zM1.5 2h13a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 .5-.5z"/>
+                                <path d="M2 3a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 2 3zm0 2a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 2 5zm0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1A.5.5 0 0 1 2 7z"/>
+                                <path d="M1.5 9A1.5 1.5 0 0 0 0 10.5v3A1.5 1.5 0 0 0 1.5 15h13a1.5 1.5 0 0 0 1.5-1.5v-3A1.5 1.5 0 0 0 14.5 9h-13zM1.5 10h13a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5z"/>
+                                <path d="M2 11a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5z"/>
                             </svg>
-                            Export PDF
-                        </button>
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.2em; font-weight: 600; color: #007bff;">Compensation Breakdown</h3>
+                            <p style="margin: 5px 0 0 0; opacity: 0.7; font-size: 0.9em; color: #6c757d;">Detailed breakdown by category</p>
+                        </div>
                     </div>
                 
                 <div id="commission-summary" class="summary-section">
@@ -1419,9 +1474,9 @@
                     </div>
                     
                     <div style="text-align: center; border-top: 3px solid #28a745; padding-top: 20px;">
-                        <div style="font-size: 1.5em; font-weight: bold; color: #155724;">
+                        <div style="font-size: 1.65em; font-weight: bold; color: #155724;">
                             <span style="margin-bottom: 8px; display: block; width: 100%;">TOTAL ESTIMATED COMPENSATION:</span>
-                            <span id="grand-total" style="font-size: 1.8em; color: #28a745; display: block; width: 100%; text-align: center; margin-top: 10px;">$0.00</span>
+                            <span id="grand-total" style="font-size: 1.98em; color: #28a745; display: block; width: 100%; text-align: center; margin-top: 10px;">$0.00</span>
                         </div>
                     </div>
                 </div>
@@ -1443,6 +1498,17 @@
                     <p style="color: #856404; font-size: 14px; margin: 0; text-align: center;">
                         <strong>Note:</strong> This is an estimate based on the inputs provided. Actual compensation may vary based on company policies, performance requirements, and other factors.
                     </p>
+                </div>
+                
+                <!-- Export PDF Button -->
+                <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(40, 167, 69, 0.2);">
+                    <button class="export-btn" onclick="exportSummaryPDF()">
+                        <svg width="16" height="16" fill="white" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Export PDF
+                    </button>
                 </div>
             </div>
         </div>
